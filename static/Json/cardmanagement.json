@@ -1,0 +1,53 @@
+{
+  "cardList":[
+    {
+      "cardId":"12345678910",
+      "cardName":"测试1",
+      "createDate":"2019-12-14 15:22:30",
+      "cardType":"超级至尊VIP",
+      "status":"未注销",
+      "cardPhone":"18888888888"
+    },
+    {
+      "cardId":"12347658910",
+      "cardName":"测试10086",
+      "createDate":"2019-12-14 15:22:30",
+      "cardType":"超级至尊VIP",
+      "status":"未注销",
+      "cardPhone":"18888888888"
+    },
+    {
+      "cardId":"12543678910",
+      "cardName":"测试2",
+      "createDate":"2019-12-14 15:22:30",
+      "cardType":"超级至尊VIP",
+      "status":"未注销",
+      "cardPhone":"18888888888"
+    },
+    {
+      "cardId":"12365478910",
+      "cardName":"测试3",
+      "createDate":"2019-12-14 13:22:30",
+      "cardType":"超级至尊VIP",
+      "status":"已注销",
+      "cardPhone":"18888888888"
+    },
+    {
+      "cardId":"32145678910",
+      "cardName":"测试4",
+      "createDate":"2019-12-14 15:20:30",
+      "cardType":"超级至尊VIP",
+      "status":"未注销",
+      "cardPhone":"18888888888"
+    },
+    {
+      "cardId":"12345698710",
+      "cardName":"测试5",
+      "createDate":"2019-12-14 15:22:30",
+      "cardType":"超级至尊VIP",
+      "status":"已注销",
+      "cardPhone":"18888888888"
+    }
+  ],
+  "total":6
+}

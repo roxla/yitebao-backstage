@@ -1,0 +1,38 @@
+[
+  {
+    "name": "卡类型名称",
+    "img": "./static/img/cardtypeset/20191210111344.jpg",
+    "discount": 9,
+    "price": 800,
+    "giveCash": 0,
+    "date": 99,
+    "type": "团卡"
+  },
+  {
+    "name": "卡类型名称",
+    "img": "./static/img/cardtypeset/20191210111344.jpg",
+    "discount": 8,
+    "price": 700,
+    "giveCash": 0,
+    "date": 199,
+    "type": "非团"
+  },
+  {
+    "name": "卡类型名称",
+    "img": "./static/img/cardtypeset/20191210111344.jpg",
+    "discount": 9,
+    "price": 800,
+    "giveCash": 0,
+    "date": 99,
+    "type": "团卡"
+  },
+  {
+    "name": "卡类型名称",
+    "img": "./static/img/cardtypeset/20191210111344.jpg",
+    "discount": 9,
+    "price": 800,
+    "giveCash": 0,
+    "date": 99,
+    "type": "团卡"
+  }
+]

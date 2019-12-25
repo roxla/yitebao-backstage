@@ -1,0 +1,145 @@
+{
+  "imgList":[
+    {
+      "name": "这是这个轮播的名字",
+      "img": "./static/img/cardtypeset/20191210111344.jpg"
+    }
+  ],
+  "shopList":[
+    {
+      "name": "商品名称",
+      "img": "./static/img/cardtypeset/20191210111344.jpg",
+      "price": 23,
+      "cost": 569,
+      "isNew": "是"
+    }
+  ],
+  "business":[
+    {
+      "name": "商家名称",
+      "img": "./static/img/cardtypeset/20191210111344.jpg",
+      "price": 23,
+      "cost": 569,
+      "loc": "是"
+    },
+    {
+      "name": "商家名称",
+      "img": "./static/img/cardtypeset/20191210111344.jpg",
+      "price": 23,
+      "cost": 569,
+      "loc": "是"
+    },
+    {
+      "name": "商家名称",
+      "img": "./static/img/cardtypeset/20191210111344.jpg",
+      "price": 23,
+      "cost": 569,
+      "loc": "是"
+    },
+    {
+      "name": "商家名称",
+      "img": "./static/img/cardtypeset/20191210111344.jpg",
+      "price": 23,
+      "cost": 569,
+      "loc": "是"
+    },
+    {
+      "name": "商家名称",
+      "img": "./static/img/cardtypeset/20191210111344.jpg",
+      "price": 23,
+      "cost": 569,
+      "loc": "是"
+    },
+    {
+      "name": "商家名称",
+      "img": "./static/img/cardtypeset/20191210111344.jpg",
+      "price": 23,
+      "cost": 569,
+      "loc": "是"
+    },
+    {
+      "name": "商家名称",
+      "img": "./static/img/cardtypeset/20191210111344.jpg",
+      "price": 23,
+      "cost": 569,
+      "loc": "是"
+    },
+    {
+      "name": "商家名称",
+      "img": "./static/img/cardtypeset/20191210111344.jpg",
+      "price": 23,
+      "cost": 569,
+      "loc": "是"
+    },
+    {
+      "name": "商家名称",
+      "img": "./static/img/cardtypeset/20191210111344.jpg",
+      "price": 23,
+      "cost": 569,
+      "loc": "是"
+    },
+    {
+      "name": "商家名称",
+      "img": "./static/img/cardtypeset/20191210111344.jpg",
+      "price": 23,
+      "cost": 569,
+      "loc": "是"
+    },
+    {
+      "name": "商家名称",
+      "img": "./static/img/cardtypeset/20191210111344.jpg",
+      "price": 23,
+      "cost": 569,
+      "loc": "是"
+    },
+    {
+      "name": "商家名称",
+      "img": "./static/img/cardtypeset/20191210111344.jpg",
+      "price": 23,
+      "cost": 569,
+      "loc": "是"
+    },
+    {
+      "name": "商家名称",
+      "img": "./static/img/cardtypeset/20191210111344.jpg",
+      "price": 23,
+      "cost": 569,
+      "loc": "是"
+    },
+    {
+      "name": "商家名称",
+      "img": "./static/img/cardtypeset/20191210111344.jpg",
+      "price": 23,
+      "cost": 569,
+      "loc": "是"
+    },
+    {
+      "name": "商家名称",
+      "img": "./static/img/cardtypeset/20191210111344.jpg",
+      "price": 23,
+      "cost": 569,
+      "loc": "是"
+    },
+    {
+      "name": "商家名称",
+      "img": "./static/img/cardtypeset/20191210111344.jpg",
+      "price": 23,
+      "cost": 569,
+      "loc": "是"
+    },
+    {
+      "name": "商家名称",
+      "img": "./static/img/cardtypeset/20191210111344.jpg",
+      "price": 23,
+      "cost": 569,
+      "loc": "是"
+    },
+    {
+      "name": "商家名称",
+      "img": "./static/img/cardtypeset/20191210111344.jpg",
+      "price": 23,
+      "cost": 569,
+      "loc": "是"
+    }
+  ]
+}

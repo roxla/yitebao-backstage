@@ -1,0 +1,360 @@
+<template>
+  <div id="card-set">
+    <div v-show="showPage" class="card-page">
+      <div class="card-button-box">
+        <div ref="input" class="search-input">
+          <input
+            v-model="cardName"
+            @focus="changeColor"
+            @blur="reChange"
+            placeholder="请输入卡类型名称"
+            type="text"
+          />
+        </div>
+        <div style="padding: 0px 15px;"></div>
+        <el-button @click="searchCard" type="primary" class="card-plus">
+          <i class="el-icon-search el-icon--left"></i>搜索
+        </el-button>
+        <div style="padding: 0px 15px;"></div>
+        <el-button @click="go('cardtypeset/cardset')" type="primary" class="card-plus">
+          <i class="el-icon-circle-plus-outline el-icon--left"></i>添加
+        </el-button>
+      </div>
+      <div :style="{padding:cardList.length>0?'':'10px'}" class="card-info-box">
+        <div class="card-box-none" v-show="cardList.length<=0">暂无卡类型</div>
+        <div class="card-box" v-for="(item,index) in cardList" :key="index">
+          <div class="card-item-box">
+            <div class="card-item-title">
+              <div @click="go('cardtypeset/cardset',item)" class="card-item-edit">编辑</div>
+              <div @click="cardDel" class="card-item-del">删除</div>
+            </div>
+            <div class="card-item-main">
+              <div class="card-item-img">
+                <img :src="item.cardTypeImg" />
+              </div>
+              <div class="card-item-text">
+                <div class="card-text-title">{{item.typeName}}</div>
+                <div class="card-item-info">
+                  <div class="card-info-title">折扣率：</div>
+                  <div class="card-info-text">
+                    <p
+                      style="margin: 0px;;max-width: 46px;overflow: hidden;text-overflow: ellipsis;"
+                    >{{item.cardDiscount}}</p>折
+                  </div>
+                </div>
+                <div class="card-item-info">
+                  <div class="card-info-title">销售价格：</div>
+                  <div class="card-info-text">
+                    <p
+                      style="margin: 0px;;max-width: 46px;overflow: hidden;text-overflow: ellipsis;"
+                    >{{item.price}}</p>元
+                  </div>
+                </div>
+                <div class="card-item-info">
+                  <div class="card-info-title">赠送金额：</div>
+                  <div class="card-info-text">
+                    <p
+                      style="margin: 0px;;max-width: 46px;overflow: hidden;text-overflow: ellipsis;"
+                    >{{item.given}}</p>元
+                  </div>
+                </div>
+                <div class="card-item-info">
+                  <div class="card-info-title">有效期天数：</div>
+                  <div class="card-info-text">
+                    <p
+                      style="margin: 0px;;max-width: 46px;overflow: hidden;text-overflow: ellipsis;"
+                    >{{item.validityDays}}</p>天
+                  </div>
+                </div>
+                <div class="card-item-type">
+                  <div class="type-text">{{item.isBoonType}}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <router-view v-show="!showPage" />
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      showPage: true,
+      cardName: "",
+      cardList: []
+    };
+  },
+  created() {
+    this.getCardData();
+  },
+  watch: {
+    $route: {
+      handler: function(val, oldVal) {
+        if (this.$route.path == "/main/cardtypeset") {
+          this.showPage = true;
+        } else {
+          this.showPage = false;
+        }
+      },
+      immediate: true
+    }
+  },
+  methods: {
+    // 选中input边框变色
+    changeColor(e) {
+      e.path[1].style.borderColor = "#1ABC9C";
+    },
+    reChange(e) {
+      e.path[1].style.borderColor = "black";
+    },
+    // 跳转
+    go(url, data) {
+      if (!!data) {
+        let item = JSON.stringify(data);
+        this.$router.push({
+          path: url,
+          query: {
+            item
+          }
+        });
+      } else {
+        this.$router.push({ path: url });
+      }
+    },
+    searchCard() {
+      let port = "cardType/getCardTypeList";
+      let obj = {
+        typeName: this.cardName
+      };
+      let upData = this.$axios.upData(port, obj);
+      upData.then(res => {
+        if (res.data.status == 200) {
+          let data = res.data.data;
+          for (let i = 0; i < data.length; i++) {
+            if (!data[i].cardTypeImg) {
+              data[i].cardTypeImg = "./static/img/zhanwei.jpg";
+            }
+            if (!!data[i].isBoon) {
+              data[i].isBoonType = "团洗";
+            } else {
+              data[i].isBoonType = "非团";
+            }
+          }
+          this.cardList = data;
+        } else if (res.data.status == 588) {
+          this.$message.error(res.data.msg);
+          this.checkLogin();
+        } else {
+          this.$message.error(res.data.msg);
+        }
+      });
+    },
+    getCardData() {
+      // this.axios.get("/static/Json/cardList.json").then(res => {
+      //   this.cardList = res.data;
+      // });
+      let port = "cardType/getCardTypeList";
+      let upData = this.$axios.upData(port);
+      upData.then(res => {
+        if (res.data.status == 200) {
+          let data = res.data.data;
+          for (let i = 0; i < data.length; i++) {
+            if (!data[i].cardTypeImg) {
+              data[i].cardTypeImg = "./static/img/zhanwei.jpg";
+            }
+            if (!!data[i].isBoon) {
+              data[i].isBoonType = "团洗";
+            } else {
+              data[i].isBoonType = "非团";
+            }
+          }
+          this.cardList = data;
+        } else if (res.data.status == 588) {
+          this.$message.error(res.data.msg);
+          this.checkLogin();
+        } else {
+          this.$message.error(res.data.msg);
+        }
+      });
+    },
+    cardDel() {}
+  }
+};
+</script>
+
+<style scoped>
+#card-set {
+  overflow-y: auto;
+}
+.card-page {
+  padding: 10px;
+}
+/* 按钮存放位置 */
+.search-input {
+  display: flex;
+  justify-content: flex-start;
+  padding: 10px 10px;
+  width: 40%;
+  border: 2px solid black;
+  border-radius: 3px;
+}
+.search-input input {
+  width: 100%;
+  margin: 8px 10px 8px 0px;
+  border: 0px;
+  box-sizing: border-box;
+  outline: 0;
+  color: #999999;
+  margin: 0px;
+}
+.search-input input::placeholder {
+  color: #999999;
+}
+.card-button-box,
+.card-info-box {
+  border-radius: 3px;
+  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+.card-button-box {
+  margin-bottom: 40px;
+  padding: 10px;
+}
+.card-info-box {
+  padding: 15px 0px 0px 10px;
+  max-height: calc(100vh - 195px);
+  overflow-y: auto;
+}
+/* 添加按钮 */
+.card-plus {
+  background: #1abc9c;
+  border-color: #1abc9c;
+}
+.card-plus:focus,
+.card-plus:hover {
+  background: #1fdcb6;
+  border-color: #1fdcb6;
+  color: #fff;
+}
+/* 卡类型 */
+.card-box {
+  width: calc((100% - 30px) / 3);
+  margin-right: 10px;
+  padding-bottom: 15px;
+}
+.card-box-none {
+  text-align: center;
+  width: 100%;
+  font-weight: 700;
+  font-family: "Arial Negreta", "Arial Normal", "Arial";
+  font-style: normal;
+}
+.card-item-box {
+  border: 1px solid #d7d7d7;
+  border-bottom-left-radius: 5px;
+  border-top-left-radius: 5px;
+  overflow: hidden;
+}
+/* 卡类型头部 */
+.card-item-title {
+  padding-bottom: 3%;
+  background-color: #eaeaea;
+  border-bottom: 1px solid #d7d7d7;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+}
+.card-item-edit,
+.card-item-del {
+  padding: 6px 16px;
+  color: white;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  border: 1px solid #d7d7d7;
+  font-size: 14px;
+  border-top: 0px;
+}
+.card-item-edit:hover,
+.card-item-del:hover {
+  cursor: pointer;
+}
+.card-item-edit {
+  margin-right: 5px;
+  background-color: #23c8ad;
+}
+.card-item-del {
+  background-color: #e8934f;
+  border-right: 0px;
+}
+/* 卡类型主体 */
+.card-item-main {
+  display: flex;
+  background-color: #4342c8;
+}
+.card-item-img {
+  position: relative;
+  width: 40%;
+  height: 0px;
+  padding-bottom: 27%;
+  background-color: #4342c8;
+}
+.card-item-img img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0px;
+}
+/* 卡类型文本 */
+.card-item-text {
+  width: 60%;
+  position: relative;
+}
+.card-text-title {
+  color: white;
+  font-size: 15px;
+  margin-bottom: 3px;
+  font-weight: 700;
+  font-family: "Arial Negreta", "Arial Normal", "Arial";
+  font-style: normal;
+  width: 90%;
+}
+.card-item-info {
+  display: flex;
+  align-items: flex-start;
+  color: white;
+  height: 16px;
+  line-height: 16px;
+  font-size: 12px;
+}
+.card-info-title {
+  width: 50%;
+  text-align: right;
+}
+.card-info-text {
+  display: flex;
+  align-items: center;
+}
+.card-item-type {
+  width: 38px;
+  height: 38px;
+  position: absolute;
+  font-size: 14px;
+  right: 0px;
+  bottom: 0px;
+  color: #bf0a0a;
+  background: #eaeaea;
+  border-top-left-radius: 2500px;
+}
+.type-text {
+  position: absolute;
+  top: 13px;
+  left: 8px;
+}
+</style>

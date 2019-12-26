@@ -91,7 +91,12 @@
                 发行卡类型
               </div>
               <div style="display: flex;" class="item-input-box">
-                <el-select class="search-select" v-model="cardValue" placeholder="请选择卡类型">
+                <el-select
+                  style="width: 88%;"
+                  class="search-select"
+                  v-model="cardValue"
+                  placeholder="请选择卡类型"
+                >
                   <el-option
                     v-for="item in options"
                     :key="item.value"
@@ -106,7 +111,62 @@
             <el-button @click="checkData()" type="primary" class="card-plus">确认发行</el-button>
           </div>
         </tab>
-        <tab title="发卡详情">发卡详情</tab>
+        <tab title="发卡详情">
+          <div class="item-search-box">
+            <el-date-picker
+              class="search-date"
+              :editable="false"
+              v-model="timeValue"
+              type="datetimerange"
+              range-separator="至"
+              start-placeholder="发行时间起"
+              end-placeholder="发行时间止"
+              value-format="yyyy-MM-dd HH:mm:ss"
+            ></el-date-picker>
+            <div style="width: 10px;"></div>
+            <el-select class="search-select" v-model="userValue" placeholder="请选择发行员工">
+              <el-option label="全部员工" value></el-option>
+              <el-option
+                v-for="item in userOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+            <div style="width: 10px;"></div>
+            <el-button @click="getMerchantData()" type="primary" class="card-plus">
+              <i class="el-icon-search el-icon--left"></i>搜索
+            </el-button>
+          </div>
+          <div class="item-table-box">
+            <el-table height="calc(100vh - 283px)" border :data="tableData" style="width: 100%">
+              <el-table-column prop="date" align="center" show-overflow-tooltip label="发行时间"></el-table-column>
+              <el-table-column prop="name" align="center" show-overflow-tooltip label="发行员工"></el-table-column>
+              <el-table-column prop="address" align="center" show-overflow-tooltip label="发行单位名称"></el-table-column>
+              <el-table-column prop="date" align="center" show-overflow-tooltip label="发行号段"></el-table-column>
+              <el-table-column prop="name" align="center" show-overflow-tooltip label="发行卡类型"></el-table-column>
+              <el-table-column prop="address" align="center" show-overflow-tooltip label="总金额"></el-table-column>
+              <el-table-column align="center" label="操作">
+                <template slot-scope="scope">
+                  <el-button
+                    type="success"
+                    @click="getRowData(scope.$index, scope.row)"
+                    size="mini"
+                  >导出数据</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+            <div style="padding: 5px 0px;">
+              <el-pagination
+                :current-page.sync="currentPage"
+                @current-change="getMerchantData"
+                :page-size="pageSize"
+                layout="total, prev, pager, next, jumper"
+                :total="total"
+              ></el-pagination>
+            </div>
+          </div>
+        </tab>
       </tabs>
     </div>
     <DialogFramework top="35vh" title="确定批量发卡" :visible.sync="dialogVisible1" width="30%">
@@ -132,10 +192,13 @@
 </template>
 
 <script>
+const pageSize = 15; //一页显示多少行
 import tabs from "@/common/tabs/tabs-framework.vue";
 import tab from "@/common/tabs/tab-framework.vue";
 import RimFramework from "@/common/rim-framework.vue";
 import DialogFramework from "@/common/dialog-framework.vue";
+import Blob from "@/excel/Blob.js";
+import Export2Excel from "@/excel/Export2Excel";
 export default {
   components: {
     RimFramework,
@@ -146,11 +209,18 @@ export default {
   data() {
     return {
       active: 0,
+      total: 0, //总条数，根据接口获取数据长度
+      currentPage: 1, //当前页数
+      pageSize: pageSize,
       showPage: true,
       startNum: "",
       endNum: "",
       options: [],
       cardValue: "",
+      timeValue: [],
+      userOptions: [],
+      userValue: "",
+      tableData: [],
       dialogVisible1: false
     };
   },
@@ -179,9 +249,36 @@ export default {
     },
     checkData() {
       if (!!cardValue || !!this.startNum || this.endNum) {
-        if(parseInt(this.startNum) < parseInt(this.endNum)){
+        if (parseInt(this.startNum) < parseInt(this.endNum)) {
           this.dialogVisible1 = true;
         }
+      }
+    },
+    export2Excel(index, data) {
+      if (200) {
+        require.ensure([], () => {
+          const { export_json_to_excel } = require("../../excel/Export2Excel");
+          const tHeader = [
+            "券编号",
+            "券名称",
+            "购买时间",
+            "兑换时间",
+            "金额",
+            "状态"
+          ]; // 上面设置Excel的表格第一行的标题
+          const filterVal = [
+            "cashCouponRecordNo",
+            "cashCouponName",
+            "purchasingDate",
+            "useDate",
+            "cashCouponMoney",
+            "isEmploy"
+          ]; // 上面的index、phone_Num、school_Name是tableData里对象的属性
+          const list = this.tableData; //把data里的tableData存到list
+          const data = this.formatJson(filterVal, list);
+          const fileName = "核销报表";
+          export_json_to_excel(tHeader, data, fileName);
+        });
       }
     }
   }
@@ -214,13 +311,25 @@ export default {
 .item-title-text span {
   color: red;
 }
-.search-select {
-  width: 88%;
-}
 .item-footer {
   margin: 0px 10px;
   padding: 10px 0px;
   border-top: 1px solid rgba(142, 142, 142, 0.3);
+}
+/* 搜索框 */
+.item-search-box {
+  display: flex;
+  padding: 0px 20px 10px;
+  align-items: center;
+}
+.search-select {
+  width: 18%;
+}
+.search-date {
+  width: 36%;
+}
+.item-table-box {
+  padding: 10px 20px 0px;
 }
 /* 按钮 */
 .card-plus {

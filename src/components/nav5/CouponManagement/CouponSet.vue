@@ -48,48 +48,63 @@
       </div>
       <div style="align-items: flex-start;" class="coupon-item-box">
         <div class="coupon-item-title">
+          <span>*</span>是否上架：
+        </div>
+        <div style="margin-left: 12px;" class="coupon-item-text">
+          <div style="text-align: left;">
+            <div style="margin-bottom: 5px;">
+              <el-radio v-model="isRacking" :label="true">是</el-radio>
+            </div>
+            <div>
+              <el-radio v-model="isRacking" :label="false">否</el-radio>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="align-items: flex-start;" class="coupon-item-box">
+        <div class="coupon-item-title">
           <span>*</span>适用商户：
         </div>
         <div style="margin-left: 12px;">
           <div class="coupon-item-radio">
             <div style="margin-bottom: 5px;">
-              <el-radio v-model="useLaundry" label="all">全部洗护商家可用</el-radio>
+              <el-radio v-model="couponType" label="laundryAll">全部洗护商家可用</el-radio>
             </div>
             <div>
-              <el-radio v-model="useLaundry" label="item">指定洗护商家可用</el-radio>
+              <el-radio v-model="couponType" label="laundryItem">指定洗护商家可用</el-radio>
               <el-checkbox-group
                 class="set-coupon-box"
                 v-model="checkedLaundry"
                 @change="handleCheckedLaundryChange"
-                :disabled="useLaundry==''||useLaundry=='all'"
+                :disabled="couponType!=='laundryItem'"
               >
                 <el-checkbox
                   class="set-coupon-item"
                   v-for="item in laundry"
-                  :label="item"
+                  :label="item.fkBusinessNo"
                   :key="item.index"
-                >{{item.name}}</el-checkbox>
+                >{{item.businessName}}</el-checkbox>
               </el-checkbox-group>
             </div>
           </div>
           <div class="coupon-item-radio">
             <div style="margin-bottom: 5px;">
-              <el-radio v-model="useShop" label="all">全部洗护商家可用</el-radio>
+              <el-radio v-model="couponType" label="shopAll">全部商品商家可用</el-radio>
             </div>
             <div>
-              <el-radio v-model="useShop" label="item">指定洗护商家可用</el-radio>
+              <el-radio v-model="couponType" label="shopItem">指定商品商家可用</el-radio>
               <el-checkbox-group
                 class="set-coupon-box"
                 v-model="checkedShop"
                 @change="handleCheckedShopChange"
-                :disabled="useShop==''||useShop=='all'"
+                :disabled="couponType!=='shopItem'"
               >
                 <el-checkbox
                   class="set-coupon-item"
                   v-for="item in shop"
-                  :label="item"
+                  :label="item.fkBusinessNo"
                   :key="item.index"
-                >{{item.name}}</el-checkbox>
+                >{{item.businessName}}</el-checkbox>
               </el-checkbox-group>
             </div>
           </div>
@@ -165,12 +180,14 @@
         <div style="margin-left: 12px;" class="coupon-item-text">
           <div class="coupon-item-radio">
             <div style="margin-bottom: 5px;">
-              <el-radio v-model="useAuthority" label="all">全部洗护商家可用</el-radio>
+              <el-radio v-model="useAuthority" label="all">不限制，所有人可领</el-radio>
             </div>
             <div>
-              <el-radio v-model="useAuthority" label="item">指定洗护商家可用</el-radio>
+              <el-radio v-model="useAuthority" label="item">指定会员等级可领</el-radio>
               <div style="margin: 5px 0px 0px 25px">
                 <el-select
+                  multiple
+                  collapse-tags
                   :disabled="useAuthority==''||useAuthority=='all'"
                   v-model="authorityValue"
                   placeholder="请选择"
@@ -213,7 +230,7 @@
           <span>*</span>使用说明：
         </div>
         <div class="coupon-item-text editor-item">
-          <editor-bar v-model="detail" :isClear="isClear"></editor-bar>
+          <editor-bar v-model="useText" :isClear="isClear"></editor-bar>
         </div>
       </div>
     </div>
@@ -222,7 +239,7 @@
         <span style="padding: 0px 20px;">确 认</span>
       </el-button>
       <div style="padding: 0px 30px;"></div>
-      <el-button type="info">
+      <el-button @click="go('/main/couponmanagement')" type="info">
         <span style="padding: 0px 20px;">取 消</span>
       </el-button>
     </div>
@@ -247,49 +264,72 @@ export default {
       endTime: "", //截止领取时间
       getNum: "", //每人限领次数
       useText: "", //使用说明
+      isRacking: false, //是否上架
       // 洗护
-      useLaundry: "",
-      laundry: [
-        {
-          name: "洗护商家1"
-        },
-        {
-          name: "洗护商家2"
-        }
-      ],
+      couponType: "",
+      laundry: [],
       checkedLaundry: [],
       // 商品
-      useShop: "",
-      shop: [
-        {
-          name: "商品商家1"
-        },
-        {
-          name: "商品商家2"
-        }
-      ],
+      shop: [],
       checkedShop: [],
       // 使用门槛
       useAuthority: "",
-      authorityValue: "选项1",
-      options: [
-        {
-          value: "选项1",
-          label: "有卡用户"
-        },
-        {
-          value: "选项2",
-          label: "无卡用户"
-        }
-      ],
+      authorityValue: [],
+      options: [],
       pickerOptions: {
         disabledDate(time) {
           return time.getTime() < Date.now();
         }
       },
-      isClear: false,
-      detail: ""
+      isClear: false
     };
+  },
+  created() {
+    this.getShopList();
+    this.getCardList();
+  },
+  mounted() {
+    if (!!this.$route.query.item) {
+      let data = JSON.parse(this.$route.query.item);
+      console.log(this.laundry);
+      console.log(this.shop);
+      this.couponName = data.couponName;
+      this.couponCash = data.money;
+      this.couponNum = data.num;
+      this.couponCost = data.fullPrice;
+      this.couponTime = data.validityDays;
+      this.endTime = data.endTime;
+      this.getNum = data.collect;
+      this.useText = data.details;
+      this.isRacking = data.isRacking;
+      if (data.couponType == 0) {
+        if (!!data.bindingBusinesses && data.bindingBusinesses.length > 0) {
+          this.couponType = "shopItem";
+          for (let i = 0; i < data.bindingBusinesses.length; i++) {
+            this.checkedShop[i] = data.bindingBusinesses[i].fkBusinessNo;
+          }
+        } else {
+          this.couponType = "shopAll";
+        }
+      } else if (data.couponType == 1) {
+        if (!!data.bindingBusinesses && data.bindingBusinesses.length > 0) {
+          this.couponType = "laundryItem";
+          for (let i = 0; i < data.bindingBusinesses.length; i++) {
+            this.checkedLaundry[i] = data.bindingBusinesses[i].fkBusinessNo;
+          }
+        } else {
+          this.couponType = "laundryAll";
+        }
+      }
+      if (!!data.bindingCardTypes && data.bindingCardTypes.length > 0) {
+        this.useAuthority = "item";
+        for (let i = 0; i < data.bindingCardTypes.length; i++) {
+          this.authorityValue = data.bindingCardTypes[i].fkCardTypeNo;
+        }
+      } else {
+        this.useAuthority = "all";
+      }
+    }
   },
   methods: {
     // 选中input边框变色
@@ -303,13 +343,13 @@ export default {
     handleCheckedLaundryChange(value) {
       if (value.length === this.laundry.length) {
         this.checkedLaundry = [];
-        this.useLaundry = "all";
+        this.couponType = "laundryAll";
       }
     },
     handleCheckedShopChange(value) {
       if (value.length === this.shop.length) {
         this.checkedShop = [];
-        this.useShop = "all";
+        this.couponType = "shopAll";
       }
     },
     replaceSeperator(mobiles) {
@@ -322,15 +362,69 @@ export default {
       }
       return result;
     },
+    // 获取列表
+    getShopList() {
+      let port = "business/getBusinessListClose";
+      let obj = {};
+      let upData = this.$axios.upData(port, obj);
+      upData.then(res => {
+        if (res.data.status == 200) {
+          let data = res.data.data;
+          let laundry = [];
+          let shop = [];
+          for (let i = 0; i < data.length; i++) {
+            if (!data[i].businessName) {
+              data[i].businessName = data[i].businessNo;
+            }
+            if (data[i].businessType == 2) {
+              laundry.push({
+                fkBusinessNo: data[i].businessNo,
+                businessName: data[i].businessName
+              });
+            } else if (data[i].businessType == 1) {
+              shop.push({
+                fkBusinessNo: data[i].businessNo,
+                businessName: data[i].businessName
+              });
+            }
+          }
+          this.laundry = laundry;
+          this.shop = shop;
+        } else if (res.data.status == 588) {
+          this.$message.error(res.data.msg);
+          this.checkLogin();
+        } else {
+          this.$message.error(res.data.msg);
+        }
+      });
+    },
+    getCardList() {
+      let port = "cardType/getCardTypeList";
+      let upData = this.$axios.upData(port);
+      upData.then(res => {
+        if (res.data.status == 200) {
+          let data = res.data.data;
+          let list = [];
+          for (let i = 0; i < data.length; i++) {
+            list.push({ label: data[i].typeName, value: data[i].cardTypeNo });
+          }
+          this.options = list;
+        } else if (res.data.status == 588) {
+          this.$message.error(res.data.msg);
+          this.checkLogin();
+        } else {
+          this.$message.error(res.data.msg);
+        }
+      });
+    },
     // 提交
     postCoupon() {
       if (
         !!this.couponName &&
         !!this.endTime &&
         !!this.useText &&
-        !!this.useLaundry &&
-        !!this.useShop &&
-        !!this.useAuthority
+        (this.useAuthority == "all" ||
+          (this.useAuthority == "item" && this.authorityValue.length > 0))
       ) {
         if (!!this.couponCash) {
           if (!!this.couponNum) {
@@ -338,28 +432,90 @@ export default {
               if (!!this.couponTime) {
                 if (!!this.getNum) {
                   if (
-                    this.useLaundry == "all" ||
-                    (this.useLaundry == "item" &&
-                      this.checkedLaundry.length > 0)
+                    this.couponType == "laundryAll" ||
+                    this.couponType == "shopAll" ||
+                    (this.couponType == "laundryItem" &&
+                      this.checkedLaundry.length > 0) ||
+                    (this.couponType == "shopItem" &&
+                      this.checkedShop.length > 0)
                   ) {
+                    // 发送请求
+                    // let useText = this.replaceSeperator(this.useText); //替换回车
+                    let port = "http://192.168.1.109:3001/coupon/addCoupon";
+                    let cardTypes = [];
+                    let binding = [];
+                    let obj = {
+                      couponName: this.couponName,
+                      num: this.couponNum,
+                      endTime: this.endTime,
+                      fullPrice: this.couponCost,
+                      money: this.couponCash,
+                      collect: this.getNum,
+                      details: this.useText,
+                      validityDays: this.couponTime,
+                      isRacking: this.isRacking
+                    };
                     if (
-                      this.useShop == "all" ||
-                      (this.useShop == "item" && this.checkedLaundry.length > 0)
+                      this.couponType == "laundryAll" ||
+                      this.couponType == "laundryItem"
                     ) {
-                      // 发送请求
-                      // let useText = this.replaceSeperator(this.useText); //替换回车
-                      let obj = {};
-                      if (this.useShop == "all") {
+                      obj.couponType = 1;
+                      if (this.couponType == "laundryItem") {
+                        for (let i = 0; i < this.checkedLaundry.length; i++) {
+                          for (let j = 0; j < this.laundry.length; j++) {
+                            if(this.checkedLaundry[i] == this.laundry[j].fkBusinessNo){
+                              binding.push(this.laundry[j]);
+                            }
+                          }
+                        }
                       } else {
+                        binding = this.checkedLaundry;
                       }
-                      if (this.useLaundry == "all") {
+                    } else if (
+                      this.couponType == "shopAll" ||
+                      this.couponType == "shopItem"
+                    ) {
+                      obj.couponType = 0;
+                      if (this.couponType == "shopItem") {
+                        for (let i = 0; i < this.checkedShop.length; i++) {
+                          for (let j = 0; j < this.shop.length; j++) {
+                            if(this.checkedShop[i] == this.shop[j].fkBusinessNo){
+                              binding.push(this.shop[j]);
+                            }
+                          }
+                        }
                       } else {
+                        binding = this.checkedShop;
                       }
-                    } else {
-                      this.$message.warning("请选择商品商户权限");
                     }
+                    if (this.authorityValue.length > 0) {
+                      for (let i = 0; i < this.authorityValue.length; i++) {
+                        for (let j = 0; j < this.options.length; j++) {
+                          if (this.authorityValue[i] == this.options[j].value) {
+                            cardTypes.push({
+                              fkCardTypeNo: this.options[j].value,
+                              cardTypeName: this.options[j].label
+                            });
+                          }
+                        }
+                      }
+                    }
+                    obj.bindingBusinesses = binding;
+                    obj.bindingCardTypes = cardTypes;
+                    let originData = this.$axios.originData(port, obj);
+                    originData.then(res => {
+                      if (res.data.status == 200) {
+                        this.$message.success("设置成功");
+                        this.$router.push({ path: "/main/couponmanagement" });
+                      } else if (res.data.status == 588) {
+                        this.$message.error(res.data.msg);
+                        this.checkLogin();
+                      } else {
+                        this.$message.error(res.data.msg);
+                      }
+                    });
                   } else {
-                    this.$message.warning("请选择洗衣商户权限");
+                    this.$message.warning("请选择商户分类");
                   }
                 } else {
                   this.$message.warning("每人限领次数只能为数字");
@@ -379,6 +535,9 @@ export default {
       } else {
         this.$message.warning("有必填项未填写，请检查并填写");
       }
+    },
+    go(url) {
+      this.$router.push({ path: url });
     }
   }
 };
@@ -462,7 +621,7 @@ export default {
   margin: 50px 0px 20px;
 }
 /* 编辑器 */
-.editor-item{
+.editor-item {
   width: 72%;
   margin-left: 10px;
 }

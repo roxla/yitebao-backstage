@@ -26,7 +26,7 @@
           <div class="card-item-box">
             <div class="card-item-title">
               <div @click="go('cardtypeset/cardset',item)" class="card-item-edit">编辑</div>
-              <div @click="cardDel" class="card-item-del">删除</div>
+              <div @click="cardDel(item)" class="card-item-del">删除</div>
             </div>
             <div class="card-item-main">
               <div class="card-item-img">
@@ -76,26 +76,45 @@
       </div>
     </div>
     <router-view v-show="!showPage" />
+    <DialogFramework top="35vh" title="确认退出？" :visible.sync="dialogVisible" width="30%">
+      <div style="padding: 15px 0px;font-size: 14px;">
+        <div>卡类型名称：{{delName}}</div>
+        <div>此操作无法撤销，请确认是否删除该卡类型</div>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false" size="small" class="dialog-close">
+          <i class="el-icon-circle-close el-icon--left"></i>取消
+        </el-button>
+        <el-button @click="del" size="small" class="dialog-danger">
+          <i class="el-icon-circle-check el-icon--left"></i>确定
+        </el-button>
+      </span>
+    </DialogFramework>
   </div>
 </template>
 
 <script>
+import DialogFramework from "@/common/dialog-framework.vue";
 export default {
+  components: {
+    DialogFramework
+  },
   data() {
     return {
       showPage: true,
       cardName: "",
-      cardList: []
+      cardList: [],
+      dialogVisible: false,
+      delName: "",
+      delNo: ""
     };
-  },
-  created() {
-    this.getCardData();
   },
   watch: {
     $route: {
       handler: function(val, oldVal) {
         if (this.$route.path == "/main/cardtypeset") {
           this.showPage = true;
+          this.getCardData();
         } else {
           this.showPage = false;
         }
@@ -135,6 +154,7 @@ export default {
         if (res.data.status == 200) {
           let data = res.data.data;
           for (let i = 0; i < data.length; i++) {
+            data[i].cardDiscount = parseFloat(data[i].cardDiscount) / 10;
             if (!data[i].cardTypeImg) {
               data[i].cardTypeImg = "./static/img/zhanwei.jpg";
             }
@@ -163,6 +183,7 @@ export default {
         if (res.data.status == 200) {
           let data = res.data.data;
           for (let i = 0; i < data.length; i++) {
+            data[i].cardDiscount = parseFloat(data[i].cardDiscount) / 10;
             if (!data[i].cardTypeImg) {
               data[i].cardTypeImg = "./static/img/zhanwei.jpg";
             }
@@ -181,7 +202,30 @@ export default {
         }
       });
     },
-    cardDel() {}
+    cardDel(data) {
+      this.delNo = data.cardTypeNo;
+      this.delName = data.typeName;
+      this.dialogVisible = true;
+    },
+    del() {
+      let port = "cardType/deleteCardType";
+      let obj = {
+        cardTypeNo: this.delNo
+      };
+      let specialData = this.$axios.specialData(port, obj);
+      specialData.then(res => {
+        if (res.data.status == 200) {
+          this.getCardData();
+          this.$message.success('删除成功');
+          this.dialogVisible = false;
+        } else if (res.data.status == 588) {
+          this.$message.error(res.data.msg);
+          this.checkLogin();
+        } else {
+          this.$message.error(res.data.msg);
+        }
+      });
+    }
   }
 };
 </script>
@@ -356,5 +400,28 @@ export default {
   position: absolute;
   top: 13px;
   left: 8px;
+}
+/* 弹窗按钮 */
+.dialog-danger {
+  background: #f56c6c;
+  border-color: #f56c6c;
+  color: #fff;
+}
+.dialog-danger:focus,
+.dialog-danger:hover {
+  background: #f88b8b;
+  border-color: #f88b8b;
+  color: #fff;
+}
+.dialog-close {
+  background: #c9c9c9;
+  border-color: #c9c9c9;
+  color: #fff;
+}
+.dialog-close:focus,
+.dialog-close:hover {
+  background: #c9c9c9;
+  border-color: #c9c9c9;
+  color: #fff;
 }
 </style>

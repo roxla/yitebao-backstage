@@ -1,12 +1,15 @@
 <template>
-  <div class="staff-item-box" :style="{borderRight:!isStaff?'0px':'',height:!isStaff?'140px':'',width:!isStaff?'325px':''}">
+  <div
+    class="staff-item-box"
+    :style="{borderRight:!isStaff?'0px':'',height:!isStaff?'140px':'',width:!isStaff?'325px':''}"
+  >
     <div v-show="!isStaff" :style="{height:!isStaff?'30%':''}" class="staff-item-title">
       <!-- <div @click="go(cardallurl,cardalldata)" class="card-item-info">详情</div> -->
-      <div @click="go(cardurl,carddata)" class="staff-item-edit">编辑</div>
+      <div @click="go(cardurl,cardInfo)" class="staff-item-edit">编辑</div>
       <div @click="cardDel" class="staff-item-del">删除</div>
     </div>
     <div v-show="isStaff" class="staff-item-title">
-      <div @click="go(staffurl,staffdata)" class="staff-item-edit">编辑</div>
+      <div @click="go(staffurl,staffInfo)" class="staff-item-edit">编辑</div>
       <div @click="staffDel" class="staff-item-del">删除</div>
     </div>
     <div v-show="!isStaff" class="card-item-main">
@@ -29,7 +32,7 @@
           <!-- <div v-show="cardInfo.shop" class="card-item-text">指定商品可用(详细查看详情)</div>
           <div v-show="!cardInfo.shop" class="card-item-text">全部商品可用</div>
           <div v-show="cardInfo.user" class="card-item-text">指定会员可领取(详细查看详情)</div>
-          <div v-show="!cardInfo.user" class="card-item-text">全部会员可领取</div> -->
+          <div v-show="!cardInfo.user" class="card-item-text">全部会员可领取</div>-->
           <div class="card-item-text">有效期天数：{{cardInfo.validityDays}}天</div>
         </div>
       </div>
@@ -56,7 +59,7 @@
           <!-- <div class="staff-info-border">
             <div class="staff-info-title">员工类型：</div>
             <div class="staff-info-text">{{staffInfo.type}}</div>
-          </div> -->
+          </div>-->
         </div>
       </div>
     </div>
@@ -114,31 +117,20 @@ export default {
       type: String,
       default: "/main/couponmanagement/couponinfo"
     },
-    cardalldata: {
-      type: Object,
-      default: function() {
-        return {};
-      }
-    },
     // 优惠券编辑
     cardurl: {
       type: String,
       default: "/main/couponmanagement/couponset"
-    },
-    carddata: {
-      type: Object,
-      default: function() {
-        return {};
-      }
     }
   },
   methods: {
     go(url, data) {
       if (!!data && JSON.stringify(data) != "{}") {
+        let item = JSON.stringify(data);
         this.$router.push({
           path: url,
           query: {
-            data: data
+            item
           }
         });
       } else {
@@ -148,9 +140,7 @@ export default {
     staffDel() {
       console.log("staffDel");
     },
-    cardDel(){
-      console.log("cardDel");
-    }
+    cardDel() {}
   }
 };
 </script>

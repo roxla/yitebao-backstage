@@ -161,27 +161,30 @@ export default {
   data() {
     return {
       cardName: "",
-      imageUrl: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
+      imageUrl:
+        "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
       discount: "",
       price: "",
       givecash: "",
       day: "",
-      isBoon: "",
+      isBoon: false,
       isClear: false,
-      detail: ""
+      detail: "",
+      cardTypeNo: ""
     };
   },
-  mounted(){
-    if(!!this.$route.query.item){
+  mounted() {
+    if (!!this.$route.query.item) {
       let data = JSON.parse(this.$route.query.item);
-      console.log(data);
-      this.cardName = data.cardTypeName;
+      this.cardName = data.typeName;
       this.imageUrl = data.cardTypeImg;
       this.isBoon = data.isBoon;
       this.discount = data.cardDiscount;
       this.price = data.price;
       this.givecash = data.given;
       this.day = data.validityDays;
+      this.detail = data.cardTypeDetails;
+      this.cardTypeNo = data.cardTypeNo;
     }
   },
   methods: {
@@ -204,15 +207,42 @@ export default {
       if (
         !!this.cardName &&
         !!this.imageUrl &&
-        !!this.price &&
-        !!this.givecash &&
-        !!this.day &&
-        !!this.isBoon
+        !!this.detail
       ) {
         if (!this.discount || this.discount < 1 || this.discount > 10) {
           this.$message.warning("折扣率填写错误");
         } else {
-          console.log(Math.floor(parseFloat(this.discount) * 10));
+          let discount = Math.floor(parseFloat(this.discount) * 10);
+          let port;
+          let obj = {
+            cardTypeNo: this.cardTypeNo,
+            cardTypeImg: this.imageUrl,
+            validityDays: Number(this.day),
+            typeName: this.cardName,
+            cardDiscount: discount,
+            price: Number(this.price),
+            given: Number(this.givecash),
+            isBoon: this.isBoon,
+            cardTypeDetails: this.detail
+          };
+          if (!!this.cardTypeNo) {
+            port = "cardType/updateCardType";
+            obj.cardTypeNo = this.cardTypeNo;
+          } else {
+            port = "cardType/addCardType";
+          }
+          let specialData = this.$axios.specialData(port, obj);
+          specialData.then(res => {
+            if (res.data.status == 200) {
+              this.$message.success('设置成功');
+              this.go('/main/cardtypeset');
+            } else if (res.data.status == 588) {
+              this.$message.error(res.data.msg);
+              this.checkLogin();
+            } else {
+              this.$message.error(res.data.msg);
+            }
+          });
         }
       } else {
         this.$message.warning("有必填项未填写，请检查并填写");
@@ -313,7 +343,7 @@ export default {
   line-height: 120px;
   text-align: center;
 }
-.avatar{
+.avatar {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -334,7 +364,7 @@ export default {
   margin: 50px 0px 20px;
 }
 /* 编辑器 */
-.editor-item{
+.editor-item {
   width: 72%;
   margin-left: 10px;
 }

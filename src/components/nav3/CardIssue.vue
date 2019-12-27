@@ -134,7 +134,7 @@
               ></el-option>
             </el-select>
             <div style="width: 10px;"></div>
-            <el-button @click="getMerchantData()" type="primary" class="card-plus">
+            <el-button @click="getCardData()" type="primary" class="card-plus">
               <i class="el-icon-search el-icon--left"></i>搜索
             </el-button>
           </div>
@@ -159,7 +159,7 @@
             <div style="padding: 5px 0px;">
               <el-pagination
                 :current-page.sync="currentPage"
-                @current-change="getMerchantData"
+                @current-change="getCardData"
                 :page-size="pageSize"
                 layout="total, prev, pager, next, jumper"
                 :total="total"
@@ -236,7 +236,7 @@ export default {
           let data = res.data.data;
           let list = [];
           for (let i = 0; i < data.length; i++) {
-            list.push({ label: data[i].typeName, value: data[i].typeName });
+            list.push({ label: data[i].typeName, value: data[i].cardTypeNo });
           }
           this.options = list;
         } else if (res.data.status == 588) {
@@ -254,6 +254,7 @@ export default {
         }
       }
     },
+    getCardData() {},
     export2Excel(index, data) {
       if (200) {
         require.ensure([], () => {

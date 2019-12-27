@@ -52,15 +52,13 @@ export default {
       handler: function(val, oldVal) {
         if (this.$route.path == "/main/couponmanagement") {
           this.showPage = true;
+          this.getCouponData();
         } else {
           this.showPage = false;
         }
       },
       immediate: true
     }
-  },
-  created() {
-    this.getCouponData();
   },
   methods: {
     // 选中input边框变色
@@ -75,7 +73,7 @@ export default {
       this.$router.push({ path: url });
     },
     getCouponData() {
-      let port = "http://192.168.1.103:3001/coupon/getCouponList";
+      let port = "http://192.168.1.109:3001/coupon/getCouponList";
       let testData = this.$axios.testData(port);
       testData.then(res => {
         if (res.data.status == 200) {

@@ -3,6 +3,17 @@ import qs from 'qs';
 
 let HTTP = 'http://192.168.1.109:1127/'
 
+// JSON格式
+export async function originData(port, obj) {
+  let url = port
+  return $axios.post(url, JSON.stringify(obj),{
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8',
+      'token': sessionStorage.getItem('token')
+    }
+  })
+}
+
 // 不带token
 export async function postData(port, obj) {
   let url = HTTP + port
@@ -52,19 +63,14 @@ export async function testData(port, obj) {
   let url = port
   if (!!obj && JSON.stringify(obj) != "{}") {
     return $axios.post(url, qs.stringify(obj), {
-      emulateJSON: true
-    }, {
       headers: {
-        'Content-Type': 'application/json;charset=UTF-8',
         'token': sessionStorage.getItem('token')
       }
     })
   } else {
-    return $axios.post(url, {
-      emulateJSON: true
-    }, {
+    let data = {};
+    return $axios.post(url, data, {
       headers: {
-        'Content-Type': 'application/json;charset=UTF-8',
         'token': sessionStorage.getItem('token')
       }
     })

@@ -4,15 +4,6 @@
       <div class="card-button-box">
         <div ref="input" class="search-input">
           <input
-            v-model="userName"
-            @focus="changeColor"
-            @blur="reChange"
-            placeholder="请输入会员卡名称"
-            type="text"
-          />
-        </div>
-        <div ref="input" class="search-input">
-          <input
             v-model="cardNum"
             @focus="changeColor"
             @blur="reChange"
@@ -51,7 +42,7 @@
                 <el-form-item label="会员卡编号:">
                   <span>{{ props.row.cardNo }}</span>
                 </el-form-item>
-                <el-form-item label="会员卡名称:">
+                <el-form-item label="卡类型名称:">
                   <span>{{ props.row.cardTypeName }}</span>
                 </el-form-item>
                 <el-form-item label="会员卡折扣:">
@@ -81,7 +72,11 @@
           <el-table-column show-overflow-tooltip align="center" label="会员卡状态" prop="cardStateText"></el-table-column>
           <el-table-column align="center" label="操作">
             <template slot-scope="scope">
-              <el-button type="primary" size="mini">详情</el-button>
+              <el-button
+                @click="go('cardmanagement/carddetails',scope.row)"
+                type="primary"
+                size="mini"
+              >详情</el-button>
               <el-popconfirm
                 icon="el-icon-info"
                 title="确认冻结该卡？"
@@ -120,6 +115,7 @@
         </div>
       </div>
     </div>
+    <router-view v-show="!showPage"/>
   </div>
 </template>
 
@@ -132,24 +128,15 @@ export default {
       currentPage: 1, //当前页数
       pageSize: pageSize,
       showPage: true,
-      userName: "",
       cardNum: "",
-      options: [
-        {
-          value: "选项1",
-          label: "黄金糕"
-        },
-        {
-          value: "选项2",
-          label: "双皮奶"
-        }
-      ],
+      options: [],
       cardValue: "",
       timeValue: [],
       cardList: []
     };
   },
-  created() {
+  created(){
+    this.getCardType();
     this.getCardData();
   },
   watch: {
@@ -173,32 +160,48 @@ export default {
       e.path[1].style.borderColor = "black";
     },
     // 跳转
-    go(url) {
-      this.$router.push({ path: url });
+    go(url, row) {
+      let data = JSON.stringify(row);
+      this.$router.push({
+        path: url,
+        query: {
+          data
+        }
+      });
+    },
+    getCardType() {
+      let port = "cardType/getCardTypeList";
+      let upData = this.$axios.upData(port);
+      upData.then(res => {
+        if (res.data.status == 200) {
+          let data = res.data.data;
+          let list = [];
+          for (let i = 0; i < data.length; i++) {
+            list.push({ label: data[i].typeName, value: data[i].cardTypeNo });
+          }
+          this.options = list;
+        } else if (res.data.status == 588) {
+          this.$message.error(res.data.msg);
+          this.checkLogin();
+        } else {
+          this.$message.error(res.data.msg);
+        }
+      });
     },
     getCardData() {
       let port = "cardManage/getCardList";
-      let obj = {};
+      let obj = {
+        cardNo: this.cardNum,
+        fkCardTypeNo: this.cardValue,
+      };
+      if (this.timeValue.length == 2) {
+        obj.createTime = this.timeValue[0];
+        obj.endTime = this.timeValue[1];
+      }
       let pages = {
         pageNum: this.currentPage,
         pageSize: this.pageSize
       };
-      // let obj = {
-      //   item1: this.cardName,
-      //   item2: this.cardNum,
-      //   item3: this.cardValue,
-      //   item4: "",
-      //   item5: ""
-      // };
-      // if (!!val) {
-      //   obj.item6 = val;
-      // } else {
-      //   obj.item6 = this.currentPage;
-      // }
-      // if (this.timeValue.length == 2) {
-      //   obj.item4 = this.timeValue[0];
-      //   obj.item5 = this.timeValue[1];
-      // }
       let upData = this.$axios.upData(port, obj, pages);
       upData.then(res => {
         if (res.data.status == 200) {
@@ -255,9 +258,9 @@ export default {
       let specialData = this.$axios.specialData(port, obj);
       specialData.then(res => {
         if (res.data.status == 200) {
-          if(!!data.isCardState){
+          if (!!data.isCardState) {
             this.$message.success("解冻成功");
-          }else{
+          } else {
             this.$message.success("冻结成功");
           }
           this.getCardData();

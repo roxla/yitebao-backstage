@@ -19,6 +19,7 @@ import OrderManagement from '@/components/nav2/OrderManagement'
 // nav3
 import UserManagement from '@/components/nav3/UserManagement'
 import CardManagement from '@/components/nav3/CardManagement'
+import CardDetails from '@/components/nav3/CardManagement/CardDetails'
 import CardIssue from '@/components/nav3/CardIssue'
 // nav4
 import CardComprehensiveStatistics from '@/components/nav4/CardComprehensiveStatistics'
@@ -159,7 +160,18 @@ export default new Router({
           meta: {
             requrireAuth: true,
             title: "会员卡管理"
-          }
+          },
+          children:[
+            {
+              path: 'carddetails',
+              name: 'carddetails',
+              component: CardDetails,
+              meta: {
+                requrireAuth: true,
+                title: "会员卡详情"
+              },
+            }
+          ]
         },
         {
           path: 'cardissue',

@@ -6,7 +6,7 @@ let HTTP = 'http://192.168.1.109:1127/'
 // JSON格式
 export async function originData(port, obj) {
   let url = port
-  return $axios.post(url, JSON.stringify(obj),{
+  return $axios.post(url, JSON.stringify(obj), {
     headers: {
       'Content-Type': 'application/json;charset=UTF-8',
       'token': sessionStorage.getItem('token')
@@ -32,27 +32,23 @@ export async function postData(port, obj) {
 export async function upData(port, obj, pages) {
   let url = HTTP + port
   let header = {
-    'Content-Type': 'application/json;charset=UTF-8',
     'token': sessionStorage.getItem('token')
   };
   if (!!pages) {
     header = {
-      'Content-Type': 'application/json;charset=UTF-8',
       'token': sessionStorage.getItem('token'),
       'pageNum': pages.pageNum,
       'pageSize': pages.pageSize
     }
   }
   if (!!obj && JSON.stringify(obj) != "{}") {
+    console.log(obj);
     return $axios.post(url, qs.stringify(obj), {
-      emulateJSON: true
-    }, {
       headers: header
     })
   } else {
-    return $axios.post(url, {
-      emulateJSON: true
-    }, {
+    let data = {};
+    return $axios.post(url, data, {
       headers: header
     })
   };

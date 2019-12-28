@@ -42,7 +42,6 @@ export async function upData(port, obj, pages) {
     }
   }
   if (!!obj && JSON.stringify(obj) != "{}") {
-    console.log(obj);
     return $axios.post(url, qs.stringify(obj), {
       headers: header
     })

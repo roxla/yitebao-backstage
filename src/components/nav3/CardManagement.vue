@@ -33,6 +33,32 @@
         <el-button @click="getCardData()" type="primary" class="card-plus">
           <i class="el-icon-search el-icon--left"></i>搜索
         </el-button>
+        <div class="card-statistics-box">
+          <div class="card-statistics-item">
+            <div class="card-statistics-num">
+              <span>500</span>张
+            </div>
+            <div class="card-statistics-text effective">有效卡</div>
+          </div>
+          <div class="card-statistics-item">
+            <div class="card-statistics-num">
+              <span>500</span>张
+            </div>
+            <div class="card-statistics-text report-loss">挂失卡</div>
+          </div>
+          <div class="card-statistics-item">
+            <div class="card-statistics-num">
+              <span>500</span>张
+            </div>
+            <div class="card-statistics-text invalid">无效卡</div>
+          </div>
+          <div class="card-statistics-item">
+            <div class="card-statistics-num">
+              <span>500</span>元
+            </div>
+            <div class="card-statistics-text effective">总余额</div>
+          </div>
+        </div>
       </div>
       <div class="card-info-box">
         <el-table height="calc(100vh - 222px)" :data="cardList" style="width: 100%">
@@ -115,7 +141,7 @@
         </div>
       </div>
     </div>
-    <router-view v-show="!showPage"/>
+    <router-view v-show="!showPage" />
   </div>
 </template>
 
@@ -135,7 +161,7 @@ export default {
       cardList: []
     };
   },
-  created(){
+  created() {
     this.getCardType();
     this.getCardData();
   },
@@ -192,7 +218,7 @@ export default {
       let port = "cardManage/getCardList";
       let obj = {
         cardNo: this.cardNum,
-        fkCardTypeNo: this.cardValue,
+        fkCardTypeNo: this.cardValue
       };
       if (this.timeValue.length == 2) {
         obj.createTime = this.timeValue[0];
@@ -229,7 +255,6 @@ export default {
               data[i].isBoonText = "非团洗卡";
             }
           }
-          console.log(data);
           this.cardList = data;
         } else if (res.data.status == 588) {
           this.$message.error(res.data.msg);
@@ -342,6 +367,41 @@ export default {
   background: #1fdcb6;
   border-color: #1fdcb6;
   color: #fff;
+}
+/* 统计 */
+.card-statistics-box {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+.card-statistics-item {
+  width: 15%;
+  margin: 10px 10px 0px 0px;
+  border-radius: 6px;
+  overflow: hidden;
+  font-size: 14px;
+}
+.card-statistics-num {
+  width: 100%;
+  height: 40px;
+  line-height: 40px;
+  background-color: #F4F4F4;
+}
+.card-statistics-num span {
+  font-size: 20px;
+  font-weight: 700;
+}
+.card-statistics-text{
+  padding: 3px 0px;
+}
+.effective {
+  background-color: #E0F4D8;
+}
+.report-loss{
+  background-color: #F4F4D8;
+}
+.invalid{
+  background-color: #F4E3D8;
 }
 /* 会员卡表格 */
 .demo-table-expand {

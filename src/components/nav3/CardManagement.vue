@@ -61,7 +61,7 @@
         </div>
       </div>
       <div class="card-info-box">
-        <el-table height="calc(100vh - 222px)" :data="cardList" style="width: 100%">
+        <el-table height="calc(100vh - 298px)" :data="cardList" style="width: 100%">
           <el-table-column type="expand">
             <template slot-scope="props">
               <el-form label-position="left" inline class="demo-table-expand">

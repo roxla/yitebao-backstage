@@ -20,6 +20,7 @@ import OrderManagement from '@/components/nav2/OrderManagement'
 import UserManagement from '@/components/nav3/UserManagement'
 import CardManagement from '@/components/nav3/CardManagement'
 import CardDetails from '@/components/nav3/CardManagement/CardDetails'
+import UserDetails from '@/components/nav3/UserManagement/UserDetails'
 import CardIssue from '@/components/nav3/CardIssue'
 // nav4
 import CardComprehensiveStatistics from '@/components/nav4/CardComprehensiveStatistics'
@@ -32,6 +33,8 @@ import CouponSet from '@/components/nav5/CouponManagement/CouponSet'
 import CouponInfo from '@/components/nav5/CouponManagement/CouponInfo'
 import StaffManagement from '@/components/nav5/StaffManagement'
 import StaffSet from '@/components/nav5/StaffManagement/StaffSet'
+// nav7
+import BasicSetting from '@/components/nav7/BasicSetting'
 
 Vue.use(Router)
 
@@ -151,7 +154,18 @@ export default new Router({
           meta: {
             requrireAuth: true,
             title: "用户管理"
-          }
+          },
+          children:[
+            {
+              path: 'userdetails',
+              name: 'userdetails',
+              component: UserDetails,
+              meta: {
+                requrireAuth: true,
+                title: "用户详情"
+              },
+            }
+          ]
         },
         {
           path: 'cardmanagement',
@@ -265,6 +279,16 @@ export default new Router({
               },
             }
           ]
+        },
+        // nav7
+        {
+          path: 'basicsetting',
+          name: 'basicsetting',
+          component: BasicSetting,
+          meta: {
+            requrireAuth: true,
+            title: "基本信息设置"
+          }
         }
       ]
     },

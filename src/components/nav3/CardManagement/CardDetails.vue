@@ -40,11 +40,14 @@
             </div>
           </div>
         </div>
-        <div class="details-info-box">
+        <div style="padding-top: 10px;" class="details-info-box">
           <div class="details-title-box">
             <div class="details-info-title">
               会员卡信息
               <span></span>
+            </div>
+            <div class="app-title-button">
+              <el-button type="primary" class="card-disable">卡冻结</el-button>
             </div>
           </div>
           <div class="details-info-main">
@@ -80,9 +83,9 @@
         </div>
       </div>
       <div class="details-bottom-box">
-        <el-tabs type="border-card">
+        <el-tabs class="card-details-tabs" type="border-card">
           <el-tab-pane label="卡操作记录">
-            <el-table height="calc(100vh - 550px)" :data="setData" style="width: 100%">
+            <el-table height="calc(100vh - 535px)" :data="setData" style="width: 100%">
               <el-table-column align="center" prop="name" show-overflow-tooltip label="单号"></el-table-column>
               <el-table-column align="center" prop="name" show-overflow-tooltip label="时间"></el-table-column>
               <el-table-column align="center" prop="address" show-overflow-tooltip label="类型"></el-table-column>
@@ -204,6 +207,23 @@ export default {
   color: black;
   font-size: 14px;
   margin-left: 10px;
+}
+/* 按钮 */
+.card-disable {
+  background: #1abc9c;
+  border-color: #1abc9c;
+  padding: 8px 12px;
+}
+.card-disable:focus,
+.card-disable:hover {
+  background: #1fdcb6;
+  border-color: #1fdcb6;
+  color: #fff;
+}
+.card-disable:disabled {
+  background: #7cedd7;
+  border-color: #7cedd7;
+  color: #fff;
 }
 /* 详情内容 */
 .details-info-main {

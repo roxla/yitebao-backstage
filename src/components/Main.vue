@@ -234,7 +234,8 @@ export default {
           name: "其他",
           itemMenu: [
             {
-              name: "基本信息设置"
+              name: "基本信息设置",
+              page: "/main/basicsetting"
             },
             {
               name: "关于我们"

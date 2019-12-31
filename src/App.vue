@@ -81,4 +81,9 @@ export default {
   width: 100%;
   height: 100%;
 }
+/* userDetails & cardDetails */
+.card-details-tabs .el-tabs__content,
+.user-details-tabs .el-tabs__content{
+  padding-bottom: 0px;
+}
 </style>

@@ -1,0 +1,10 @@
+[
+  {
+    "label":"首页",
+    "value":"../index/index"
+  },
+  {
+    "label":"个人中心",
+    "value":"../my/my"
+  }
+]

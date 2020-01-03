@@ -50,7 +50,7 @@
           </div>
           <div class="staff-info-border">
             <div class="staff-info-title">员工性别：</div>
-            <div class="staff-info-text">{{staffInfo.sex}}</div>
+            <div class="staff-info-text">{{staffInfo.sexName}}</div>
           </div>
           <div class="staff-info-border">
             <div class="staff-info-title">员工地址：</div>

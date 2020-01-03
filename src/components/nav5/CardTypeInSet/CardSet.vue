@@ -192,17 +192,6 @@ export default {
     go(url) {
       this.$router.push({ path: url });
     },
-    beforeAvatarUpload(file) {
-      const isJPG = file.type === "image/jpeg";
-      const isLt2M = file.size / 1024 / 1024 < 2;
-      if (!isJPG) {
-        this.$message.error("上传头像图片只能是 JPG 格式!");
-      }
-      if (!isLt2M) {
-        this.$message.error("上传头像图片大小不能超过 2MB!");
-      }
-      return isJPG && isLt2M;
-    },
     postCard() {
       if (
         !!this.cardName &&
@@ -311,17 +300,6 @@ export default {
   text-align: left;
   color: red;
   font-size: 13px;
-}
-.upimg {
-  width: 120px;
-  height: 120px;
-  line-height: 120px;
-  /* border: 1px dashed #c4c4c4; */
-  border-radius: 5px;
-}
-.upimg img {
-  width: 100%;
-  height: 100%;
 }
 .avatar-uploader {
   text-align: left;

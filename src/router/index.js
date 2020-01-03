@@ -26,6 +26,7 @@ import CardIssue from '@/components/nav3/CardIssue'
 import CardComprehensiveStatistics from '@/components/nav4/CardComprehensiveStatistics'
 // nav5
 import AppIndexSet from '@/components/nav5/AppIndexSet'
+import SetImgList from '@/components/nav5/AppIndexSet/SetImgList'
 import CardTypeInSet from '@/components/nav5/CardTypeInSet'
 import CardSet from '@/components/nav5/CardTypeInSet/CardSet'
 import CouponManagement from '@/components/nav5/CouponManagement'
@@ -215,6 +216,15 @@ export default new Router({
             requrireAuth: true,
             title: "APP首页管理"
           },
+          children: [{
+            path: 'setimglist',
+            name: 'setimglist',
+            component: SetImgList,
+            meta: {
+              requrireAuth: true,
+              title: "轮播图设置"
+            },
+          }]
         },
         {
           path: 'cardtypeset',

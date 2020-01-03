@@ -40,15 +40,13 @@ export default {
       handler: function(val, oldVal) {
         if (this.$route.path == "/main/staffmanagement") {
           this.showPage = true;
+          this.getStaffData();
         } else {
           this.showPage = false;
         }
       },
       immediate: true
     }
-  },
-  created() {
-    this.getStaffData();
   },
   methods: {
     go(url) {
@@ -58,13 +56,14 @@ export default {
       let port = "worker/getWorkerList";
       let upData = this.$axios.upData(port);
       upData.then(res => {
+        console.log(res);
         if (res.data.status == 200) {
           let data = res.data.data;
           for (let i = 0; i < data.length; i++) {
             if (data[i].sex == "0") {
-              data[i].sex = "男";
+              data[i].sexName = "男";
             } else {
-              data[i].sex = "女";
+              data[i].sexName = "女";
             }
             this.staffList = data;
           }

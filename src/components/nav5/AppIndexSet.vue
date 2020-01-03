@@ -8,7 +8,12 @@
             <span>(最多5张)</span>
           </div>
           <div class="app-title-button">
-            <el-button :disabled="imgList.length>=5" type="primary" class="app-plus">
+            <el-button
+              @click="go('appindexset/setimglist')"
+              :disabled="imgList.length>=5"
+              type="primary"
+              class="app-plus"
+            >
               <i class="el-icon-circle-plus-outline el-icon--left"></i>添加
             </el-button>
           </div>
@@ -18,7 +23,7 @@
           <div v-for="(item,index) in imgList" :key="index" class="item-box">
             <div class="app-item-box">
               <div class="app-item-title">
-                <div @click="go()" class="app-item-edit">编辑</div>
+                <div @click="go('appindexset/setimglist',item)" class="app-item-edit">编辑</div>
                 <div @click="imgDel" class="app-item-del">删除</div>
               </div>
               <div class="img-item-box">
@@ -152,15 +157,35 @@ export default {
       businessList: []
     };
   },
-  created() {
-    this.getImgData();
-    this.getShopData();
-    this.getBusinessData();
+  watch: {
+    $route: {
+      handler: function(val, oldVal) {
+        if (this.$route.path == "/main/appindexset") {
+          this.showPage = true;
+          this.getImgData();
+          this.getShopData();
+          this.getBusinessData();
+        } else {
+          this.showPage = false;
+        }
+      },
+      immediate: true
+    }
   },
   methods: {
     // 跳转
-    go(url) {
-      this.$router.push({ path: url });
+    go(url, data) {
+      if (!!data) {
+        let item = JSON.stringify(data);
+        this.$router.push({
+          path: url,
+          query: {
+            item
+          }
+        });
+      } else {
+        this.$router.push({ path: url });
+      }
     },
     getImgData() {
       this.axios.get("/static/Json/appindex.json").then(res => {
@@ -181,10 +206,11 @@ export default {
       console.log(123);
     },
     // 下拉检测
-    handleScroll(e,func) {
+    handleScroll(e, func) {
       // 滚动条距离底部的距离scrollBottom
-      let scrollBottom = e.target.scrollHeight - e.target.scrollTop - e.target.clientHeight;
-      if(scrollBottom === 0){
+      let scrollBottom =
+        e.target.scrollHeight - e.target.scrollTop - e.target.clientHeight;
+      if (scrollBottom === 0) {
         console.log(1);
         func();
       }

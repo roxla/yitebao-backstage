@@ -11,11 +11,20 @@ import './icons'
 
 Vue.config.productionTip = false
 
-Vue.prototype.axios = $axios; //axios原生调用
-Vue.prototype.$axios = axios; //axiosServer.js接口调用
-Vue.prototype.checkLogin = function(){
+Vue.prototype.axios = $axios; // axios原生调用
+Vue.prototype.$axios = axios; // axiosServer.js接口调用
+Vue.prototype.beforeAvatarUpload = function (file) { // 上传图片大小限制
+  const fileSize = file.size / 1024 < 513;
+  if (!fileSize) {
+    this.$message.error('上传图片大小不能超过512KB!');
+  }
+  return fileSize;
+}
+Vue.prototype.checkLogin = function () { // 检查登录状态
   sessionStorage.clear();
-  this.$router.push({ path: "/" });
+  this.$router.push({
+    path: "/"
+  });
 };
 Vue.use(ElementUI);
 
@@ -23,7 +32,9 @@ Vue.use(ElementUI);
 new Vue({
   el: '#app',
   router,
-  components: { App },
+  components: {
+    App
+  },
   template: '<App/>'
 })
 

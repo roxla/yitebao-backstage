@@ -86,4 +86,14 @@ export default {
 .user-details-tabs .el-tabs__content{
   padding-bottom: 0px;
 }
+/* setImgList */
+.search-set-input input{
+  border: 2px solid black;
+}
+.search-set-input input:hover{
+  border-color: black;
+}
+.search-set-input input:focus{
+  border-color: #1abc9c;
+}
 </style>

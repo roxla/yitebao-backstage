@@ -3,7 +3,7 @@
     <div v-show="showPage" class="coupon-page">
       <div class="coupon-button-box">
         <div ref="input" class="search-input">
-          <input @focus="changeColor" @blur="reChange" placeholder="请输入优惠券名称" type="text" />
+          <input v-model="couponName" @focus="changeColor" @blur="reChange" placeholder="请输入优惠券名称" type="text" />
         </div>
         <div style="padding: 0px 15px;"></div>
         <el-button type="primary" class="coupon-plus">
@@ -44,6 +44,7 @@ export default {
   data() {
     return {
       showPage: true,
+      couponName:"",
       couponList: []
     };
   },

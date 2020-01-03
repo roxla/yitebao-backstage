@@ -6,7 +6,13 @@
           <span>*</span>姓名
         </div>
         <div ref="input" class="set-info-input">
-          <input @focus="changeColor" @blur="reChange" placeholder="请输入姓名" type="text" />
+          <input
+            v-model="name"
+            @focus="changeColor"
+            @blur="reChange"
+            placeholder="请输入姓名"
+            type="text"
+          />
         </div>
       </div>
       <div class="set-info">
@@ -14,7 +20,13 @@
           <span>*</span>手机号
         </div>
         <div ref="input" class="set-info-input">
-          <input @focus="changeColor" @blur="reChange" placeholder="请输入手机号" type="text" />
+          <input
+            v-model="tel"
+            @focus="changeColor"
+            @blur="reChange"
+            placeholder="请输入手机号"
+            type="text"
+          />
         </div>
       </div>
       <div class="set-info">
@@ -22,15 +34,18 @@
           <span>*</span>密码
         </div>
         <div ref="input" class="set-info-input">
-          <input @focus="changeColor" @blur="reChange" placeholder="请输入密码" type="text" />
+          <input v-model="pw" @focus="changeColor" @blur="reChange" placeholder="请输入密码" type="text" />
         </div>
       </div>
       <div class="set-info">
         <div class="set-info-title">
           <span>*</span>性别
         </div>
-        <div ref="input" class="set-info-input">
-          <input @focus="changeColor" @blur="reChange" placeholder="请输入性别" type="text" />
+        <div style="text-align: left;">
+          <el-select v-model="sex" class="search-select" placeholder="请选择性别">
+            <el-option label="女" :value="1"></el-option>
+            <el-option label="男" :value="0"></el-option>
+          </el-select>
         </div>
       </div>
       <div class="set-info">
@@ -38,7 +53,13 @@
           <span>*</span>住址
         </div>
         <div ref="input" class="set-info-input">
-          <input @focus="changeColor" @blur="reChange" placeholder="请输入住址" type="text" />
+          <input
+            v-model="address"
+            @focus="changeColor"
+            @blur="reChange"
+            placeholder="请输入住址"
+            type="text"
+          />
         </div>
       </div>
     </div>
@@ -65,11 +86,11 @@
       </div>
     </div>
     <div class="set-button-box">
-      <el-button type="success">
+      <el-button @click="postStaffData" type="success">
         <span style="padding: 0px 20px;">确 认</span>
       </el-button>
       <div style="padding: 0px 30px;"></div>
-      <el-button type="info">
+      <el-button @click="go('/main/staffmanagement')" type="info">
         <span style="padding: 0px 20px;">取 消</span>
       </el-button>
     </div>
@@ -84,8 +105,13 @@ export default {
   },
   data() {
     return {
-      test: "123",
-      // select1
+      data: {},
+      // input
+      sex: "",
+      name: "",
+      tel: "",
+      pw: "",
+      address: "",
       checkAll: false,
       checkedCities: [],
       cities: [],
@@ -97,20 +123,16 @@ export default {
       this.cities = res.data;
     });
   },
-  watch: {
-    $route: {
-      handler: function() {
-        if (this.$route.query.data) {
-          console.log(this.$route.query.data);
-        }
-      },
-      immediate: true
-    },
-    test: {
-      handler: function(val) {
-        console.log(val);
-      },
-      immediate: true
+  mounted() {
+    if (!!this.$route.query.item) {
+      let data = JSON.parse(this.$route.query.item);
+      this.data = data;
+      console.log(data);
+      this.sex = data.sex;
+      this.name = data.bwName;
+      this.tel = data.phone;
+      this.pw = data.pwd;
+      this.address = data.detailsAddress;
     }
   },
   methods: {
@@ -132,6 +154,51 @@ export default {
       this.checkAll = checkedCount === this.cities.length;
       this.isIndeterminate =
         checkedCount > 0 && checkedCount < this.cities.length;
+    },
+    go(url) {
+      this.$router.push({ path: url });
+    },
+    postStaffData() {
+      if (
+        !!this.tel &&
+        !!this.name &&
+        !!this.pw &&
+        !!JSON.stringify(this.sex) &&
+        !!this.address
+      ) {
+        let port;
+        let obj = {
+          phone: this.tel,
+          bwName: this.name,
+          pwd: this.pw,
+          sex: this.sex,
+          detailsAddress: this.address
+        };
+        if (!!this.data.workerNo) {
+          port = "worker/updateWorker";
+          obj.workerNo = this.data.workerNo;
+        } else {
+          port = "worker/addWorker";
+        }
+        let upData = this.$axios.upData(port, obj);
+        upData.then(res => {
+          if (res.data.status == 200) {
+            if(!!this.data.workerNo){
+              this.$message.success("修改成功");
+            }else{
+              this.$message.success("添加成功");
+            }
+            this.$router.push({ path: '/main/staffmanagement' });
+          } else if (res.data.status == 588) {
+            this.$message.error(res.data.msg);
+            this.checkLogin();
+          } else {
+            this.$message.error(res.data.msg);
+          }
+        });
+      } else {
+        this.$message.warning("有必填项未填写，请检查");
+      }
     }
   }
 };
@@ -187,6 +254,10 @@ export default {
 }
 .set-info-input input::placeholder {
   color: #999999;
+}
+.search-select {
+  width: 88%;
+  margin-left: 7px;
 }
 /* 权限设置位 */
 .set-authority-box {

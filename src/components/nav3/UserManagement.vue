@@ -22,7 +22,7 @@
           value-format="yyyy-MM-dd HH:mm:ss"
         ></el-date-picker>
         <el-select class="search-select" v-model="userValue" placeholder="请选择卡类型">
-          <el-option label="全部卡类型" value></el-option>
+          <el-option label="全部卡类型" value=""></el-option>
           <el-option
             v-for="item in options"
             :key="item.value"

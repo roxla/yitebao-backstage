@@ -275,26 +275,4 @@ export default {
   align-items: center;
   justify-content: center;
 }
-.dialog-success {
-  background: #02bda6;
-  border-color: #02bda6;
-  color: #fff;
-}
-.dialog-success:focus,
-.dialog-success:hover {
-  background: #02bda6;
-  border-color: #02bda6;
-  color: #fff;
-}
-.dialog-close {
-  background: #c9c9c9;
-  border-color: #c9c9c9;
-  color: #fff;
-}
-.dialog-close:focus,
-.dialog-close:hover {
-  background: #c9c9c9;
-  border-color: #c9c9c9;
-  color: #fff;
-}
 </style>

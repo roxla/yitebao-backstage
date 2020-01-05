@@ -12,15 +12,15 @@
           <div class="details-info-main">
             <div class="details-info-item">
               <div class="details-info-left">用户ID:</div>
-              <div class="details-info-right">114514</div>
+              <div class="details-info-right">{{cardData.fkConsumerNo}}</div>
             </div>
             <div class="details-info-item">
-              <div class="details-info-left">用户姓名:</div>
-              <div class="details-info-right">野兽先辈</div>
+              <div class="details-info-left">用户昵称:</div>
+              <div class="details-info-right">{{userData.nickName}}</div>
             </div>
             <div class="details-info-item">
               <div class="details-info-left">用户电话:</div>
-              <div class="details-info-right">py交易</div>
+              <div class="details-info-right">{{userData.phone}}</div>
             </div>
             <div class="details-info-item">
               <div class="details-info-left">消费总额:</div>
@@ -28,15 +28,15 @@
             </div>
             <div class="details-info-item">
               <div class="details-info-left">积分数:</div>
-              <div class="details-info-right">{{}}</div>
+              <div class="details-info-right">{{userData.integral}}</div>
             </div>
             <div class="details-info-item">
               <div class="details-info-left">用户所在地:</div>
-              <div class="details-info-right">114514</div>
+              <div class="details-info-right">{{userData.address}}</div>
             </div>
             <div class="details-info-item">
               <div class="details-info-left">注册时间:</div>
-              <div class="details-info-right">审核中</div>
+              <div class="details-info-right">{{userData.createTime}}</div>
             </div>
           </div>
         </div>
@@ -46,8 +46,11 @@
               会员卡信息
               <span></span>
             </div>
-            <div class="app-title-button">
-              <el-button type="primary" class="card-disable">卡冻结</el-button>
+            <div v-show="!cardData.isCardState" class="app-title-button">
+              <el-button @click="dialogVisible = true" type="primary" class="card-disable">卡冻结</el-button>
+            </div>
+            <div v-show="cardData.isCardState" class="app-title-button">
+              <el-button @click="dialogVisible = true" type="primary" class="card-disable">卡解冻</el-button>
             </div>
           </div>
           <div class="details-info-main">
@@ -87,8 +90,8 @@
           <el-tab-pane label="卡操作记录">
             <el-table height="calc(100vh - 535px)" :data="setData" style="width: 100%">
               <el-table-column align="center" prop="name" show-overflow-tooltip label="单号"></el-table-column>
-              <el-table-column align="center" prop="name" show-overflow-tooltip label="时间"></el-table-column>
-              <el-table-column align="center" prop="address" show-overflow-tooltip label="类型"></el-table-column>
+              <el-table-column align="center" prop="createTime" show-overflow-tooltip label="时间"></el-table-column>
+              <el-table-column align="center" prop="typeText" show-overflow-tooltip label="类型"></el-table-column>
               <el-table-column align="center" prop="address" show-overflow-tooltip label="金额"></el-table-column>
               <el-table-column align="center" prop="address" show-overflow-tooltip label="方式"></el-table-column>
               <el-table-column align="center" prop="address" show-overflow-tooltip label="单号"></el-table-column>
@@ -133,15 +136,37 @@
           </el-tab-pane>
         </el-tabs>
       </div>
+      <DialogFramework top="35vh" title="确认弹窗" :visible.sync="dialogVisible" width="30%">
+        <div v-show="!cardData.isCardState" style="padding: 15px 0px;font-size: 14px;">
+          <span>确认冻结该会员卡？</span>
+        </div>
+        <div v-show="cardData.isCardState" style="padding: 15px 0px;font-size: 14px;">
+          <span>确认解冻该会员卡？</span>
+        </div>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="dialogVisible = false" size="small" class="dialog-close">
+            <i class="el-icon-circle-close el-icon--left"></i>取消
+          </el-button>
+          <el-button @click="cardDel" size="small" class="dialog-danger">
+            <i class="el-icon-switch-button el-icon--left"></i>确认
+          </el-button>
+        </span>
+      </DialogFramework>
     </div>
   </div>
 </template>
 
 <script>
+import DialogFramework from "@/common/dialog-framework.vue";
 const pageSize = 15; //一页显示多少行
 export default {
+  components: {
+    DialogFramework
+  },
   data() {
     return {
+      showPage: true,
+      userData: {},
       cardData: {},
       pageSize: pageSize,
       setData: [],
@@ -149,19 +174,112 @@ export default {
       setPage: 1, //当前页数
       changeData: [],
       changeTotal: 0,
-      changePage: 1
+      changePage: 1,
+      dialogVisible: false
     };
   },
-  mounted() {
-    this.cardData = JSON.parse(this.$route.query.data);
-    console.log(this.cardData);
+  watch: {
+    $route: {
+      handler: function(val, oldVal) {
+        if (this.$route.path == "/main/cardmanagement/carddetails") {
+          this.showPage = true;
+          this.cardData = JSON.parse(this.$route.query.data);
+          this.getUserData(this.cardData.fkConsumerNo);
+          this.getCardOperate(this.cardData.cardNo);
+        } else {
+          this.showPage = false;
+        }
+      },
+      immediate: true
+    }
   },
   methods: {
+    // 获取用户信息
+    getUserData(No) {
+      let port = 'consumers/getConsumersInfo';
+      let obj = {
+        consumerNo: No
+      }
+      let upData = this.$axios.upData(port, obj);
+      upData.then(res => {
+        if (res.data.status == 200) {
+          let data = res.data.data[0];
+          // console.log(data);
+          data.createTime = this.formatDate(new Date(data.createTime));
+          this.userData = data;
+        } else if (res.data.status == 588) {
+          this.$message.error(res.data.msg);
+          this.checkLogin();
+        } else {
+          this.$message.error(res.data.msg);
+        }
+      });
+    },
+    // 获取操作记录
+    getCardOperate(No){
+      let obj = {
+        fkCardNo: No
+      };
+      let pages = {
+        pageNum: this.setPage,
+        pageSize: this.pageSize
+      };
+      let port = "cardOperateRecord/getCardOperateRecord";
+      let upData = this.$axios.upData(port, obj, pages);
+      upData.then(res => {
+        if (res.data.status == 200) {
+          let data = res.data.data;
+          console.log(data);
+          for(let i=0;i<data.length;i++){
+            if(!!data.operationType){
+              data.typeText = "收入";
+            }else{
+              data.typeText = "支出";
+            }
+          }
+          this.setData = data;
+        } else if (res.data.status == 588) {
+          this.$message.error(res.data.msg);
+          this.checkLogin();
+        } else {
+          this.$message.error(res.data.msg);
+        }
+      });
+    },
     // 卡操作分页方法
     setChange() {},
     changeBeetle() {},
     getRowData(index, row) {
       console.log(row);
+    },
+    cardDel() {
+      let cardState;
+      if (!!this.cardData.isCardState) {
+        cardState = 0; //解冻
+      } else {
+        cardState = 2; //冻结
+      }
+      let obj = {
+        cardNo: this.cardData.cardNo,
+        cardState: cardState
+      };
+      let port = "cardManage/carSetState";
+      let upData = this.$axios.upData(port, obj);
+      upData.then(res => {
+        if (res.data.status == 200) {
+          if (!!this.cardData.isCardState) {
+            this.$message.success("解冻成功");
+          } else {
+            this.$message.success("冻结成功");
+          }
+          this.$router.push({ path: "/main/cardmanagement" });
+        } else if (res.data.status == 588) {
+          this.$message.error(res.data.msg);
+          this.checkLogin();
+        } else {
+          this.$message.error(res.data.msg);
+        }
+      });
     }
   }
 };

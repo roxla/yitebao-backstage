@@ -54,7 +54,7 @@
         <el-button @click="dialogVisible1 = false" size="small" class="dialog-close">
           <i class="el-icon-circle-close el-icon--left"></i>取消
         </el-button>
-        <el-button @click="dialogVisible1 = false" size="small" class="dialog-success">
+        <el-button @click="changePW" size="small" class="dialog-success">
           <i class="el-icon-circle-check el-icon--left"></i>确定
         </el-button>
       </span>
@@ -268,7 +268,7 @@ export default {
             this.$message.error(res.data.msg);
           }
         });
-      };
+      }
       // this.axios.get("/static/Json/menuList.json").then(res => {
       //   this.userName = res.data.name;
       // });
@@ -294,6 +294,35 @@ export default {
       this.dialogVisible2 = false;
       sessionStorage.clear();
       this.$router.push({ path: "/" });
+    },
+    changePW() {
+      if (
+        JSON.stringify(this.oldPw) != '""' &&
+        JSON.stringify(this.newPw) != '""' &&
+        this.resPw == this.newPw
+      ) {
+        let obj = {
+          pwd: this.oldPw,
+          freshPwd: this.newPw,
+          confirmPwd: this.resPw
+        };
+        let port = "worker/updateWorkerPwd";
+        let upData = this.$axios.upData(port, obj);
+        upData.then(res => {
+          if (res.data.status == 200) {
+            this.$message.success("密码修改成功,请重新登录");
+            this.dialogVisible1 = false;
+            this.logOut();
+          } else if (res.data.status == 588) {
+            this.$message.error(res.data.msg);
+            this.checkLogin();
+          } else {
+            this.$message.error(res.data.msg);
+          }
+        });
+      } else {
+        this.$message.warning("有必填项未填写，请检查");
+      }
     }
   }
 };
@@ -324,39 +353,5 @@ export default {
   margin-left: 10px;
   border-left: 3px solid #00e6e6;
   padding-left: 10px;
-}
-/* 弹窗按钮 */
-.dialog-danger {
-  background: #f56c6c;
-  border-color: #f56c6c;
-  color: #fff;
-}
-.dialog-danger:focus,
-.dialog-danger:hover {
-  background: #f88b8b;
-  border-color: #f88b8b;
-  color: #fff;
-}
-.dialog-success {
-  background: #02bda6;
-  border-color: #02bda6;
-  color: #fff;
-}
-.dialog-success:focus,
-.dialog-success:hover {
-  background: #02bda6;
-  border-color: #02bda6;
-  color: #fff;
-}
-.dialog-close {
-  background: #c9c9c9;
-  border-color: #c9c9c9;
-  color: #fff;
-}
-.dialog-close:focus,
-.dialog-close:hover {
-  background: #c9c9c9;
-  border-color: #c9c9c9;
-  color: #fff;
 }
 </style>

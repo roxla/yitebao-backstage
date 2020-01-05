@@ -30,13 +30,19 @@
             :value="item.value"
           ></el-option>
         </el-select>
+        <el-select class="search-select" v-model="typeValue" placeholder="请选择卡类型">
+          <el-option label="全部卡状态" value></el-option>
+          <el-option label="正常" :value="0"></el-option>
+          <el-option label="过期" :value="1"></el-option>
+          <el-option label="冻结" :value="2"></el-option>
+        </el-select>
         <el-button @click="getCardData()" type="primary" class="card-plus">
           <i class="el-icon-search el-icon--left"></i>搜索
         </el-button>
         <div class="card-statistics-box">
           <div class="card-statistics-item">
             <div class="card-statistics-num">
-              <span>500</span>张
+              <span>{{cardStatistics.normal}}</span>张
             </div>
             <div class="card-statistics-text effective">有效卡</div>
           </div>
@@ -48,13 +54,13 @@
           </div>
           <div class="card-statistics-item">
             <div class="card-statistics-num">
-              <span>500</span>张
+              <span>{{cardStatistics.invalid}}</span>张
             </div>
             <div class="card-statistics-text invalid">无效卡</div>
           </div>
           <div class="card-statistics-item">
             <div class="card-statistics-num">
-              <span>500</span>元
+              <span>{{cardStatistics.cardBalanceSum}}</span>元
             </div>
             <div class="card-statistics-text effective">总余额</div>
           </div>
@@ -93,7 +99,7 @@
             </template>
           </el-table-column>
           <el-table-column show-overflow-tooltip align="center" label="会员卡编号" prop="cardNo"></el-table-column>
-          <el-table-column show-overflow-tooltip align="center" label="会员卡名称" prop="cardTypeName"></el-table-column>
+          <el-table-column show-overflow-tooltip align="center" label="卡类型名称" prop="cardTypeName"></el-table-column>
           <el-table-column show-overflow-tooltip align="center" label="创建时间" prop="createTime"></el-table-column>
           <el-table-column show-overflow-tooltip align="center" label="会员卡状态" prop="cardStateText"></el-table-column>
           <el-table-column align="center" label="操作">
@@ -157,19 +163,19 @@ export default {
       cardNum: "",
       options: [],
       cardValue: "",
+      typeValue: "",
       timeValue: [],
-      cardList: []
+      cardList: [],
+      cardStatistics:{}
     };
-  },
-  created() {
-    this.getCardType();
-    this.getCardData();
   },
   watch: {
     $route: {
       handler: function(val, oldVal) {
         if (this.$route.path == "/main/cardmanagement") {
           this.showPage = true;
+          this.getCardData();
+          this.getCardType();
         } else {
           this.showPage = false;
         }
@@ -216,10 +222,21 @@ export default {
     },
     getCardData() {
       let port = "cardManage/getCardList";
+      let createTime = "";
+      let endDate = "";
+      if (this.timeValue.length >= 2) {
+        createTime = this.timeValue[0];
+        endDate = this.timeValue[1];
+      }
       let obj = {
         cardNo: this.cardNum,
-        fkCardTypeNo: this.cardValue
+        fkCardTypeNo: this.cardValue,
+        createTime: createTime,
+        endDate: endDate
       };
+      if (JSON.stringify(this.typeValue) != '""') {
+        obj.cardState = this.typeValue;
+      }
       if (this.timeValue.length == 2) {
         obj.createTime = this.timeValue[0];
         obj.endTime = this.timeValue[1];
@@ -231,7 +248,8 @@ export default {
       let upData = this.$axios.upData(port, obj, pages);
       upData.then(res => {
         if (res.data.status == 200) {
-          let data = res.data.data;
+          this.cardStatistics = res.data.data.cardStatistics[0];
+          let data = res.data.data.cardList;
           for (let i = 0; i < data.length; i++) {
             switch (data[i].cardState) {
               case 0:
@@ -385,23 +403,23 @@ export default {
   width: 100%;
   height: 40px;
   line-height: 40px;
-  background-color: #F4F4F4;
+  background-color: #f4f4f4;
 }
 .card-statistics-num span {
   font-size: 20px;
   font-weight: 700;
 }
-.card-statistics-text{
+.card-statistics-text {
   padding: 3px 0px;
 }
 .effective {
-  background-color: #E0F4D8;
+  background-color: #e0f4d8;
 }
-.report-loss{
-  background-color: #F4F4D8;
+.report-loss {
+  background-color: #f4f4d8;
 }
-.invalid{
-  background-color: #F4E3D8;
+.invalid {
+  background-color: #f4e3d8;
 }
 /* 会员卡表格 */
 .demo-table-expand {

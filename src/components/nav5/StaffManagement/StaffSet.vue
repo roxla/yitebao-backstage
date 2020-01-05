@@ -29,7 +29,7 @@
           />
         </div>
       </div>
-      <div class="set-info">
+      <div v-show="JSON.stringify(data) == '{}'" class="set-info">
         <div class="set-info-title">
           <span>*</span>密码
         </div>
@@ -52,15 +52,15 @@
         <div class="set-info-title">
           <span>*</span>住址
         </div>
-        <div ref="input" class="set-info-input">
-          <input
-            v-model="address"
-            @focus="changeColor"
-            @blur="reChange"
-            placeholder="请输入住址"
-            type="text"
-          />
+        <div class="address-box">
+          <el-input @focus="getMap" v-model="address" id="userAddress" class="search-set-input"></el-input>
         </div>
+      </div>
+      <div v-show="JSON.stringify(data) != '{}'" class="set-info">
+        <div class="set-info-title">
+          <span style="margin-left: 7.8px;"></span>详细地址
+        </div>
+        <div class="address-text">{{userAddr}}</div>
       </div>
     </div>
     <div class="set-authority-box">
@@ -111,7 +111,9 @@ export default {
       name: "",
       tel: "",
       pw: "",
+      userAddr: "",
       address: "",
+      district: "",
       checkAll: false,
       checkedCities: [],
       cities: [],
@@ -131,8 +133,16 @@ export default {
       this.sex = data.sex;
       this.name = data.bwName;
       this.tel = data.phone;
-      this.pw = data.pwd;
       this.address = data.detailsAddress;
+      if (data.detailsAddress == data.province) {
+        this.userAddr = data.detailsAddress;
+      } else if (data.detailsAddress == data.city) {
+        this.userAddr = data.province + data.detailsAddress;
+      } else if (data.detailsAddress == data.district) {
+        this.userAddr = data.province + data.city + data.detailsAddress;
+      } else {
+        this.userAddr = data.province + data.city + data.district + data.detailsAddress;
+      }
     }
   },
   methods: {
@@ -159,10 +169,18 @@ export default {
       this.$router.push({ path: url });
     },
     postStaffData() {
+      let pwd = false;
+      if (!this.data.workerNo) {
+        if (!!this.pw) {
+          pwd = true;
+        }
+      } else {
+        pwd = true;
+      }
       if (
         !!this.tel &&
         !!this.name &&
-        !!this.pw &&
+        !!pwd &&
         !!JSON.stringify(this.sex) &&
         !!this.address
       ) {
@@ -170,25 +188,38 @@ export default {
         let obj = {
           phone: this.tel,
           bwName: this.name,
-          pwd: this.pw,
           sex: this.sex,
           detailsAddress: this.address
         };
+        if (!!this.district) {
+          obj.province = this.district.split("省")[0] + "省";
+          if (!!this.district.split("省")[1]) {
+            obj.city = this.district.split("省")[1].split("市")[0] + "市";
+            if (!!this.district.split("省")[1].split("市")[1]) {
+              obj.district =
+                this.district
+                  .split("省")[1]
+                  .split("市")[1]
+                  .split("区")[0] + "区";
+            }
+          }
+        }
         if (!!this.data.workerNo) {
           port = "worker/updateWorker";
-          obj.workerNo = this.data.workerNo;
+          // obj.workerNo = this.data.workerNo;
         } else {
           port = "worker/addWorker";
+          obj.pwd = this.pw;
         }
         let upData = this.$axios.upData(port, obj);
         upData.then(res => {
           if (res.data.status == 200) {
-            if(!!this.data.workerNo){
+            if (!!this.data.workerNo) {
               this.$message.success("修改成功");
-            }else{
+            } else {
               this.$message.success("添加成功");
             }
-            this.$router.push({ path: '/main/staffmanagement' });
+            this.$router.push({ path: "/main/staffmanagement" });
           } else if (res.data.status == 588) {
             this.$message.error(res.data.msg);
             this.checkLogin();
@@ -199,6 +230,19 @@ export default {
       } else {
         this.$message.warning("有必填项未填写，请检查");
       }
+    },
+    getMap() {
+      let that = this;
+      AMap.plugin("AMap.Autocomplete", function() {
+        var auto = new AMap.Autocomplete({
+          input: "userAddress"
+        });
+        AMap.event.addListener(auto, "select", select); //注册监听，当选中某条记录时会触发
+        function select(e) {
+          that.address = e.poi.name;
+          that.district = e.poi.district;
+        }
+      });
     }
   }
 };
@@ -300,5 +344,16 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.address-box {
+  margin-left: 7px;
+  width: 88%;
+}
+.address-text{
+  text-align: left;
+  margin-left: 7px;
+  font-family: "Arial Negreta", "Arial Normal", "Arial";
+  font-style: normal;
+  color: #a7a7a7;
 }
 </style>

@@ -44,6 +44,40 @@ export default {
   padding: 5px 0px;
   width: 109px;
 }
+/* 弹窗按钮 */
+.dialog-danger {
+  background: #f56c6c;
+  border-color: #f56c6c;
+  color: #fff;
+}
+.dialog-danger:focus,
+.dialog-danger:hover {
+  background: #f88b8b;
+  border-color: #f88b8b;
+  color: #fff;
+}
+.dialog-success {
+  background: #02bda6;
+  border-color: #02bda6;
+  color: #fff;
+}
+.dialog-success:focus,
+.dialog-success:hover {
+  background: #02bda6;
+  border-color: #02bda6;
+  color: #fff;
+}
+.dialog-close {
+  background: #c9c9c9;
+  border-color: #c9c9c9;
+  color: #fff;
+}
+.dialog-close:focus,
+.dialog-close:hover {
+  background: #c9c9c9;
+  border-color: #c9c9c9;
+  color: #fff;
+}
 /* couponSet */
 .coupon-end-time .el-input__inner {
   border: 2px solid black;
@@ -95,5 +129,8 @@ export default {
 }
 .search-set-input input:focus{
   border-color: #1abc9c;
+}
+.search-set-input input{
+  color: #999999;
 }
 </style>

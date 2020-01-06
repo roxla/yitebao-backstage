@@ -92,9 +92,14 @@
               <el-table-column align="center" prop="name" show-overflow-tooltip label="单号"></el-table-column>
               <el-table-column align="center" prop="createTime" show-overflow-tooltip label="时间"></el-table-column>
               <el-table-column align="center" prop="typeText" show-overflow-tooltip label="类型"></el-table-column>
-              <el-table-column align="center" prop="address" show-overflow-tooltip label="金额"></el-table-column>
-              <el-table-column align="center" prop="address" show-overflow-tooltip label="方式"></el-table-column>
-              <el-table-column align="center" prop="address" show-overflow-tooltip label="单号"></el-table-column>
+              <el-table-column align="center" prop="capital" show-overflow-tooltip label="金额"></el-table-column>
+              <el-table-column align="center" prop="detailsText" show-overflow-tooltip label="方式"></el-table-column>
+              <el-table-column
+                align="center"
+                prop="cardOperateRecordNo"
+                show-overflow-tooltip
+                label="操作单号"
+              ></el-table-column>
               <el-table-column align="center" label="操作">
                 <template v-slot="scope">
                   <el-button
@@ -108,7 +113,7 @@
             <div style="padding: 5px 0px;">
               <el-pagination
                 :current-page.sync="setPage"
-                @current-change="setChange"
+                @current-change="getCardOperate()"
                 :page-size="pageSize"
                 layout="total, prev, pager, next, jumper"
                 :total="setTotal"
@@ -185,7 +190,7 @@ export default {
           this.showPage = true;
           this.cardData = JSON.parse(this.$route.query.data);
           this.getUserData(this.cardData.fkConsumerNo);
-          this.getCardOperate(this.cardData.cardNo);
+          this.getCardOperate();
         } else {
           this.showPage = false;
         }
@@ -196,10 +201,10 @@ export default {
   methods: {
     // 获取用户信息
     getUserData(No) {
-      let port = 'consumers/getConsumersInfo';
+      let port = "consumers/getConsumersInfo";
       let obj = {
         consumerNo: No
-      }
+      };
       let upData = this.$axios.upData(port, obj);
       upData.then(res => {
         if (res.data.status == 200) {
@@ -216,9 +221,9 @@ export default {
       });
     },
     // 获取操作记录
-    getCardOperate(No){
+    getCardOperate() {
       let obj = {
-        fkCardNo: No
+        fkCardNo: this.cardData.cardNo
       };
       let pages = {
         pageNum: this.setPage,
@@ -227,14 +232,35 @@ export default {
       let port = "cardOperateRecord/getCardOperateRecord";
       let upData = this.$axios.upData(port, obj, pages);
       upData.then(res => {
+        console.log(res);
         if (res.data.status == 200) {
-          let data = res.data.data;
-          console.log(data);
-          for(let i=0;i<data.length;i++){
-            if(!!data.operationType){
-              data.typeText = "收入";
-            }else{
-              data.typeText = "支出";
+          this.setTotal = res.data.data.total;
+          let data = res.data.data.list;
+          for (let i = 0; i < data.length; i++) {
+            if (!!data[i].operationType) {
+              data[i].typeText = "收入";
+            } else {
+              data[i].typeText = "支出";
+            }
+            switch (data[i].operationDetails) {
+              case 0:
+                data[i].detailsText = "充值";
+                break;
+              case 1:
+                data[i].detailsText = "赠送";
+                break;
+              case 2:
+                data[i].detailsText = "退款";
+                break;
+              case 3:
+                data[i].detailsText = "洗护消费";
+                break;
+              case 4:
+                data[i].detailsText = "商品消费";
+                break;
+              case 5:
+                data[i].detailsText = "补款";
+                break;
             }
           }
           this.setData = data;
@@ -247,7 +273,6 @@ export default {
       });
     },
     // 卡操作分页方法
-    setChange() {},
     changeBeetle() {},
     getRowData(index, row) {
       console.log(row);

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="back-page">
     <router-view />
   </div>
 </template>
@@ -9,4 +9,6 @@ export default {};
 </script>
 
 <style scoped>
+#back-page {
+}
 </style>

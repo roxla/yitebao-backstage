@@ -120,7 +120,6 @@ export default {
 }
 .tabs {
   position: relative;
-  margin: 30px 10px 10px;
 }
 .tabs__nav {
   display: flex;
@@ -129,7 +128,7 @@ export default {
   background-color: #fff;
   height: 100%;
   box-sizing: content-box;
-  margin: 0px 10px 10px;
+  padding: 0px 10px 10px;
 }
 .tabs__item{
   width: 121px;

@@ -10,32 +10,25 @@
       diaLog:获取用户菜单选项 接收
     -->
     <MenuFramework @getData="getTitle" @diaLog="diaLog" :userName="userName" :menuItem="menuList" />
-    <div v-show="!isBack" style="width: 100%">
+    <div style="width: 100%">
       <div class="title">
         <svg-icon id="title-icon" icon-class="u297"></svg-icon>
         <div class="title-text">
-          <el-breadcrumb separator-class="el-icon-arrow-right">
+          <el-breadcrumb v-show="!isBack" separator-class="el-icon-arrow-right">
             <el-breadcrumb-item
               v-for="(item,index) in currentPath"
               :key="index"
               :to="{ path: item.path }"
             >{{item.meta.title}}</el-breadcrumb-item>
           </el-breadcrumb>
-        </div>
-      </div>
-      <router-view style="padding-top: 5px;" />
-    </div>
-    <div v-show="isBack" style="width: 100%">
-      <div class="title">
-        <svg-icon id="title-icon" icon-class="u297"></svg-icon>
-        <div class="title-text">
-          <div>
+          <div v-show="isBack">
             <span @click="$router.back(-1)" class="back-page-button">返回上一页</span>
             <i class="back-page-icon el-icon-arrow-right"></i>
             <span class="back-page">{{backTitle}}</span>
           </div>
         </div>
       </div>
+      <router-view style="padding-top: 5px;" />
     </div>
     <!-- 弹窗 -->
     <DialogFramework top="32vh" title="修改密码" :visible.sync="dialogVisible1" width="30%">

@@ -3,6 +3,7 @@ import qs from 'qs';
 
 let HTTP = 'http://192.168.1.101:1127/'
 // let HTTP = 'http://192.168.1.103:1127/'
+// let HTTP = 'http://ytb.fryxy.cn/testDev'
 
 // JSON格式
 export async function originData(port, obj) {

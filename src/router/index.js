@@ -36,6 +36,9 @@ import StaffManagement from '@/components/nav5/StaffManagement'
 import StaffSet from '@/components/nav5/StaffManagement/StaffSet'
 // nav7
 import BasicSetting from '@/components/nav7/BasicSetting'
+// back
+import BackPage from '@/components/BackPage'
+import LaundryServiceOrder from '@/components/backpage/LaundryServiceOrder'
 
 Vue.use(Router)
 
@@ -299,6 +302,27 @@ export default new Router({
             requrireAuth: true,
             title: "基本信息设置"
           }
+        },
+        // back
+        {
+          path: 'backpage',
+          name: 'backpage',
+          component: BackPage,
+          meta: {
+            requrireAuth: true,
+            title: "返回上一页"
+          },
+          children:[
+            {
+              path: 'laundryserviceorder',
+              name: 'laundryserviceorder',
+              component: LaundryServiceOrder,
+              meta: {
+                requrireAuth: true,
+                title: "洗护服务订单详情"
+              },
+            }
+          ]
         }
       ]
     },

@@ -10,7 +10,7 @@
       diaLog:获取用户菜单选项 接收
     -->
     <MenuFramework @getData="getTitle" @diaLog="diaLog" :userName="userName" :menuItem="menuList" />
-    <div style="width: 100%">
+    <div v-show="!isBack" style="width: 100%">
       <div class="title">
         <svg-icon id="title-icon" icon-class="u297"></svg-icon>
         <div class="title-text">
@@ -24,6 +24,18 @@
         </div>
       </div>
       <router-view style="padding-top: 5px;" />
+    </div>
+    <div v-show="isBack" style="width: 100%">
+      <div class="title">
+        <svg-icon id="title-icon" icon-class="u297"></svg-icon>
+        <div class="title-text">
+          <div>
+            <span @click="$router.back(-1)" class="back-page-button">返回上一页</span>
+            <i class="back-page-icon el-icon-arrow-right"></i>
+            <span class="back-page">{{backTitle}}</span>
+          </div>
+        </div>
+      </div>
     </div>
     <!-- 弹窗 -->
     <DialogFramework top="32vh" title="修改密码" :visible.sync="dialogVisible1" width="30%">
@@ -92,12 +104,20 @@ export default {
         for (let i = 1; i < this.$route.matched.length; i++) {
           this.currentPath.push(this.$route.matched[i]);
         }
+        if (this.$route.matched[1].name === "backpage") {
+          this.backTitle = this.$route.matched[2].meta.title;
+          this.isBack = true;
+        } else {
+          this.isBack = false;
+        }
       },
       immediate: true
     }
   },
   data() {
     return {
+      isBack: false,
+      backTitle: "",
       // 用户名
       userInfo: {},
       userName: "",
@@ -323,7 +343,7 @@ export default {
       } else {
         this.$message.warning("有必填项未填写，请检查");
       }
-    }
+    },
   }
 };
 </script>
@@ -353,5 +373,24 @@ export default {
   margin-left: 10px;
   border-left: 3px solid #00e6e6;
   padding-left: 10px;
+}
+.back-page-button{
+  font-size: 15px;
+  font-weight: 700;
+  color: #606266;
+  cursor: pointer;
+}
+.back-page-button:hover{
+  color: #409EFF;
+}
+.back-page {
+  font-weight: 400;
+  color: #606266;
+  font-size: 15px;
+}
+.back-page-icon {
+  color: #c0c4cc;
+  margin: 0 6px;
+  font-weight: 400;
 }
 </style>

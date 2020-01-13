@@ -13,11 +13,11 @@
               <div style="margin-top: 90px;" class="main-input-box">
                 <div class="main-input">
                   <svg-icon class="main-input-icon" icon-class="u79"></svg-icon>
-                  <input v-model="login_tel" placeholder="请输入手机号" type="text" />
+                  <input @keyup.enter.native="login" v-model="login_tel" placeholder="请输入手机号" type="text" />
                 </div>
                 <div class="main-input">
                   <svg-icon class="main-input-icon" icon-class="u80"></svg-icon>
-                  <input v-model="login_pw" placeholder="请输入登录密码" type="password" />
+                  <input @keyup.enter.native="login" v-model="login_pw" placeholder="请输入登录密码" type="password" />
                 </div>
                 <div class="main-button">
                   <button @click="login">立即登陆</button>

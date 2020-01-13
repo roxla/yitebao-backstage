@@ -4,10 +4,19 @@
       <div class="user-button-box">
         <div ref="input" class="search-input">
           <input
-            v-model="userNum"
+            v-model="userTel"
             @focus="changeColor"
             @blur="reChange"
-            placeholder="请输入会员卡编号"
+            placeholder="请输入电话"
+            type="text"
+          />
+        </div>
+        <div ref="input" class="search-input">
+          <input
+            v-model="userName"
+            @focus="changeColor"
+            @blur="reChange"
+            placeholder="请输入姓名"
             type="text"
           />
         </div>
@@ -21,55 +30,18 @@
           end-placeholder="创建结束日期"
           value-format="yyyy-MM-dd HH:mm:ss"
         ></el-date-picker>
-        <el-select class="search-select" v-model="userValue" placeholder="请选择卡类型">
-          <el-option label="全部卡类型" value=""></el-option>
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          ></el-option>
-        </el-select>
         <el-button @click="getuserData()" type="primary" class="user-plus">
           <i class="el-icon-search el-icon--left"></i>搜索
         </el-button>
       </div>
       <div class="user-info-box">
         <el-table height="calc(100vh - 222px)" :data="userList" style="width: 100%">
-          <el-table-column type="expand">
-            <template slot-scope="props">
-              <el-form label-position="left" inline class="demo-table-expand">
-                <el-form-item label="会员卡编号:">
-                  <span>{{ props.row.userNo }}</span>
-                </el-form-item>
-                <el-form-item label="卡类型名称:">
-                  <span>{{ props.row.userTypeName }}</span>
-                </el-form-item>
-                <el-form-item label="会员卡折扣:">
-                  <span>{{ props.row.userDiscount }}%</span>
-                </el-form-item>
-                <el-form-item label="会员卡状态:">
-                  <span>{{ props.row.userStateText }}</span>
-                </el-form-item>
-                <el-form-item label="是否为团洗卡:">
-                  <span>{{ props.row.isBoonText }}</span>
-                </el-form-item>
-                <el-form-item label="会员卡余额:">
-                  <span>{{ props.row.userBalance.toFixed(2) }}</span>
-                </el-form-item>
-                <el-form-item label="创建时间:">
-                  <span>{{ props.row.createTime }}</span>
-                </el-form-item>
-                <el-form-item label="结束时间:">
-                  <span>{{ props.row.endTime }}</span>
-                </el-form-item>
-              </el-form>
-            </template>
-          </el-table-column>
-          <el-table-column show-overflow-tooltip align="center" label="会员卡编号" prop="userNo"></el-table-column>
-          <el-table-column show-overflow-tooltip align="center" label="会员卡名称" prop="userTypeName"></el-table-column>
-          <el-table-column show-overflow-tooltip align="center" label="创建时间" prop="createTime"></el-table-column>
-          <el-table-column show-overflow-tooltip align="center" label="会员卡状态" prop="userStateText"></el-table-column>
+          <el-table-column show-overflow-tooltip align="center" label="用户昵称" prop="userNo"></el-table-column>
+          <el-table-column show-overflow-tooltip align="center" label="电话" prop="userTypeName"></el-table-column>
+          <el-table-column show-overflow-tooltip align="center" label="性别" prop="createTime"></el-table-column>
+          <el-table-column show-overflow-tooltip align="center" label="生日" prop="userStateText"></el-table-column>
+          <el-table-column show-overflow-tooltip align="center" label="注册日期" prop="userStateText"></el-table-column>
+          <el-table-column show-overflow-tooltip align="center" label="已有会员卡数" prop="userStateText"></el-table-column>
           <el-table-column align="center" label="操作">
             <template slot-scope="scope">
               <el-button @click="go()" type="primary" size="mini">详情</el-button>
@@ -124,9 +96,8 @@ export default {
       currentPage: 1, //当前页数
       pageSize: pageSize,
       showPage: true,
-      userNum: "",
-      options: [],
-      userValue: "",
+      userTel: "",
+      userName: "",
       timeValue: [],
       userList: []
     };
@@ -164,12 +135,8 @@ export default {
         }
       });
     },
-    getuserData() {
-      
-    },
-    userDelete() {
-    
-    }
+    getuserData() {},
+    userDelete() {}
   }
 };
 </script>

@@ -48,12 +48,6 @@
           </div>
           <div class="card-statistics-item">
             <div class="card-statistics-num">
-              <span>500</span>张
-            </div>
-            <div class="card-statistics-text report-loss">挂失卡</div>
-          </div>
-          <div class="card-statistics-item">
-            <div class="card-statistics-num">
               <span>{{cardStatistics.invalid}}</span>张
             </div>
             <div class="card-statistics-text invalid">无效卡</div>

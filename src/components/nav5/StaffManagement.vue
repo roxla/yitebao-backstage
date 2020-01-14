@@ -53,7 +53,7 @@ export default {
       this.$router.push({ path: url });
     },
     getStaffData() {
-      let port = "worker/getWorkerList";
+      let port = "handlers/worker/getWorkerList";
       let upData = this.$axios.upData(port);
       upData.then(res => {
         console.log(res);

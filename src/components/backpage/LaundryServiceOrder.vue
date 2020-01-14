@@ -25,7 +25,161 @@
     </div>
     <tabs v-model="active">
       <tab title="订单详情">
-        <div>123</div>
+        <div style="margin: 10px 8px 0px;font-size: 14px;">
+          <div class="order-info-box">
+            <div class="order-info-title">
+              <div class="order-info-icon"></div>
+              <div class="order-title-text">买家信息</div>
+            </div>
+            <div class="order-info-main">
+              <div class="order-info-item">
+                用户名：
+                <span>胡慧</span>
+              </div>
+              <div class="order-info-item">
+                手机号码：
+                <span>1588558575</span>
+              </div>
+              <div class="order-info-item">
+                所在地区：
+                <span>浙江 杭州</span>
+              </div>
+            </div>
+            <div class="order-info-line"></div>
+          </div>
+          <div class="order-info-box">
+            <div class="order-info-title">
+              <div class="order-info-icon"></div>
+              <div class="order-title-text">订单信息</div>
+            </div>
+            <div class="order-info-main">
+              <div class="order-info-item">
+                订单编号：
+                <span>5317459134</span>
+              </div>
+              <div class="order-info-item">
+                订单类型：
+                <span>普通订单</span>
+              </div>
+              <div class="order-info-item">
+                创建时间：
+                <span>2018-11-08 18:54</span>
+              </div>
+              <div class="order-info-item">
+                付款时间：
+                <span>2018-11-28 18:54</span>
+              </div>
+              <div class="order-info-item">
+                订单总价：
+                <span class="span-red">￥59.80</span>
+              </div>
+              <div class="order-info-item">
+                洗护费用：
+                <span class="span-red">￥10</span>
+              </div>
+              <div class="order-info-item">
+                附加费用：
+                <span class="span-red">￥10</span>
+              </div>
+              <div class="order-info-item">
+                总配送费：
+                <span class="span-red">￥10</span>
+              </div>
+            </div>
+          </div>
+          <div class="order-info-box">
+            <div class="order-info-title">
+              <div class="order-info-icon"></div>
+              <div class="order-title-text">支付信息</div>
+            </div>
+            <div class="order-info-main">
+              <div class="order-info-item">
+                支付方式：
+                <span>卡支付</span>
+              </div>
+              <div class="order-info-item">
+                支付流水：
+                <span>22365456523</span>
+              </div>
+              <div class="order-info-item">
+                优惠券金额：
+                <span></span>
+              </div>
+              <div class="order-info-item">
+                优惠券编号：
+                <span></span>
+              </div>
+              <div class="order-info-item">
+                折扣金额：
+                <span>￥20</span>
+              </div>
+              <div class="order-info-item">
+                折扣率：
+                <span>（银卡）80%</span>
+              </div>
+              <div class="order-info-item">
+                卡号：
+                <span>12454545454</span>
+              </div>
+              <div class="order-info-item">
+                卡类型：
+                <span>12454545454</span>
+              </div>
+              <div class="order-info-item">
+                实收款：
+                <span class="span-red">￥59.80</span>
+              </div>
+            </div>
+          </div>
+          <div class="order-info-table">
+            <el-table border :data="tableData" style="width: 100%">
+              <el-table-column min-width="170" align="center" label="商品信息">
+                <template v-slot="scope">
+                  <div class="table-info-box">
+                    <div class="table-img">
+                      <img :src="shopIcon" alt="img" />
+                    </div>
+                    <div class="table-text-box">
+                      <div class="table-text-main">儿童服装花点棉衣</div>
+                      <div class="table-text-side">干洗—档次</div>
+                    </div>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column min-width="70" align="center" prop="name" label="状态"></el-table-column>
+              <el-table-column min-width="70" align="center" prop="address" label="单价"></el-table-column>
+              <el-table-column min-width="70" align="center" prop="name" label="附加费"></el-table-column>
+              <el-table-column min-width="70" align="center" prop="address" label="颜色"></el-table-column>
+              <el-table-column
+                show-overflow-tooltip
+                min-width="100"
+                align="center"
+                prop="name"
+                label="瑕疵"
+              ></el-table-column>
+              <el-table-column min-width="70" align="center" prop="address" label="附件"></el-table-column>
+              <el-table-column
+                show-overflow-tooltip
+                min-width="90"
+                align="center"
+                prop="name"
+                label="品牌"
+              ></el-table-column>
+              <el-table-column
+                show-overflow-tooltip
+                min-width="100"
+                align="center"
+                prop="address"
+                label="附加服务"
+              ></el-table-column>
+              <el-table-column min-width="70" align="center" label="操作">
+                <template v-slot="scope">
+                  <el-button>123</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+        </div>
       </tab>
       <tab title="取配信息">
         <div class="delivery-info-box">
@@ -198,15 +352,23 @@ export default {
         "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
       shopInfo: {},
       active: 0,
+      // 订单详情
+      tableData: [
+        {
+          name: 123
+        }
+      ],
+      // 取配信息
       step1: 0,
       receiveInfo: [],
       step2: 0,
       deliveryInfo: [],
+      // 退补款
       refund: {
-        name:"123"
+        name: "123"
       },
       toll: {
-        name:"123"
+        name: "123"
       }
     };
   },
@@ -223,7 +385,7 @@ export default {
           this.step2 = parseInt(res.data.list.length) - 1;
         }
       });
-    },
+    }
   }
 };
 </script>
@@ -399,5 +561,68 @@ export default {
   margin-left: 10px;
   width: 85%;
   text-align: left;
+}
+/* 订单详情 */
+.order-info-title {
+  display: flex;
+  align-items: center;
+}
+.order-info-icon {
+  width: 7px;
+  height: 19px;
+  background-color: #f3ab47;
+  border-radius: 3px;
+}
+.order-title-text {
+  font-weight: 700;
+  text-align: left;
+  padding-left: 10px;
+}
+.order-info-main {
+  padding: 10px 0px 0px 30px;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.order-info-item {
+  font-weight: 700;
+  color: #999999;
+  width: 25%;
+  padding-bottom: 10px;
+}
+.order-info-item span {
+  color: black;
+}
+.order-info-item .span-red {
+  color: red;
+}
+.order-info-line {
+  padding-bottom: 10px;
+  border-top: 2px dashed #efefef;
+}
+.table-info-box {
+  display: flex;
+  align-items: center;
+}
+.table-img {
+  width: 40%;
+  height: 30%;
+  margin-right: 5px;
+}
+.table-img img {
+  width: 100%;
+  object-fit: fill;
+}
+.table-text-box {
+  font-size: 13px;
+  text-align: left;
+  font-weight: 700;
+}
+.table-text-main {
+  color: #333333;
+}
+.table-text-side {
+  color: #999999;
 }
 </style>

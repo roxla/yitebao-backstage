@@ -123,7 +123,7 @@ export default {
       this.$router.push({ path: url });
     },
     getShopList() {
-      let port = "business/getBusinessListClose";
+      let port = "handlers/business/getBusinessListClose";
       let obj = {};
       let upData = this.$axios.upData(port, obj);
       upData.then(res => {

@@ -68,7 +68,7 @@
         <div style="margin-left: 12px;">
           <div class="coupon-item-radio">
             <div style="margin-bottom: 5px;">
-              <el-radio v-model="couponType" label="laundryAll">全部洗护商家可用</el-radio>
+              <el-radio @change="clickAll" v-model="couponType" label="laundryAll">全部洗护商家可用</el-radio>
             </div>
             <div>
               <el-radio v-model="couponType" label="laundryItem">指定洗护商家可用</el-radio>
@@ -89,7 +89,7 @@
           </div>
           <div class="coupon-item-radio">
             <div style="margin-bottom: 5px;">
-              <el-radio v-model="couponType" label="shopAll">全部商品商家可用</el-radio>
+              <el-radio @change="clickAll" v-model="couponType" label="shopAll">全部商品商家可用</el-radio>
             </div>
             <div>
               <el-radio v-model="couponType" label="shopItem">指定商品商家可用</el-radio>
@@ -339,16 +339,23 @@ export default {
     reChange(e) {
       e.refInput[0].style.borderColor = "black";
     },
+    // 单选框方法
+    clickAll() {
+      this.checkedLaundry = [];
+      this.checkedShop = [];
+    },
     // 多选框方法
     handleCheckedLaundryChange(value) {
       if (value.length === this.laundry.length) {
         this.checkedLaundry = [];
+        this.checkedShop = [];
         this.couponType = "laundryAll";
       }
     },
     handleCheckedShopChange(value) {
       if (value.length === this.shop.length) {
         this.checkedShop = [];
+        this.checkedLaundry = [];
         this.couponType = "shopAll";
       }
     },
@@ -364,7 +371,7 @@ export default {
     },
     // 获取列表
     getShopList() {
-      let port = "business/getBusinessListClose";
+      let port = "handlers/business/getBusinessListClose";
       let obj = {};
       let upData = this.$axios.upData(port, obj);
       upData.then(res => {
@@ -399,7 +406,7 @@ export default {
       });
     },
     getCardList() {
-      let port = "cardType/getCardTypeList";
+      let port = "handlers/cardType/getCardTypeList";
       let upData = this.$axios.upData(port);
       upData.then(res => {
         if (res.data.status == 200) {
@@ -441,7 +448,7 @@ export default {
                   ) {
                     // 发送请求
                     // let useText = this.replaceSeperator(this.useText); //替换回车
-                    let port = "http://192.168.1.109:3001/coupon/addCoupon";
+                    let port = "activity/coupon/addCoupon";
                     let cardTypes = [];
                     let binding = [];
                     let obj = {
@@ -463,7 +470,10 @@ export default {
                       if (this.couponType == "laundryItem") {
                         for (let i = 0; i < this.checkedLaundry.length; i++) {
                           for (let j = 0; j < this.laundry.length; j++) {
-                            if(this.checkedLaundry[i] == this.laundry[j].fkBusinessNo){
+                            if (
+                              this.checkedLaundry[i] ==
+                              this.laundry[j].fkBusinessNo
+                            ) {
                               binding.push(this.laundry[j]);
                             }
                           }
@@ -479,7 +489,9 @@ export default {
                       if (this.couponType == "shopItem") {
                         for (let i = 0; i < this.checkedShop.length; i++) {
                           for (let j = 0; j < this.shop.length; j++) {
-                            if(this.checkedShop[i] == this.shop[j].fkBusinessNo){
+                            if (
+                              this.checkedShop[i] == this.shop[j].fkBusinessNo
+                            ) {
                               binding.push(this.shop[j]);
                             }
                           }
@@ -502,8 +514,8 @@ export default {
                     }
                     obj.bindingBusinesses = binding;
                     obj.bindingCardTypes = cardTypes;
-                    let originData = this.$axios.originData(port, obj);
-                    originData.then(res => {
+                    let upData = this.$axios.upData(port, obj);
+                    upData.then(res => {
                       if (res.data.status == 200) {
                         this.$message.success("设置成功");
                         this.$router.push({ path: "/main/couponmanagement" });

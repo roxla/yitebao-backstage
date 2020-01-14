@@ -229,7 +229,7 @@ export default {
   },
   methods: {
     getCardType() {
-      let port = "cardType/getCardTypeList";
+      let port = "handlers/cardType/getCardTypeList";
       let upData = this.$axios.upData(port);
       upData.then(res => {
         if (res.data.status == 200) {

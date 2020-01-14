@@ -266,7 +266,7 @@ export default {
   },
   methods: {
     getUserName() {
-      let port = "worker/getLoginData";
+      let port = "handlers/worker/getLoginData";
       if (!this.userName) {
         let upData = this.$axios.upData(port);
         upData.then(res => {

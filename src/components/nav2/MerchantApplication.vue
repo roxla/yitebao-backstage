@@ -101,7 +101,7 @@ export default {
       this.getCardData(val);
     },
     getMerchantData() {
-      let port = "businessReview/getBusinessReviewList";
+      let port = "handlers/businessReview/getBusinessReviewList";
       let obj = {};
       let pages = {
         pageNum: this.currentPage,

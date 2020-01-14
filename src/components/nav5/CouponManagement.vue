@@ -74,9 +74,9 @@ export default {
       this.$router.push({ path: url });
     },
     getCouponData() {
-      let port = "http://192.168.1.109:3001/coupon/getCouponList";
-      let testData = this.$axios.testData(port);
-      testData.then(res => {
+      let port = "activity/coupon/getCouponList";
+      let upData = this.$axios.upData(port);
+      upData.then(res => {
         if (res.data.status == 200) {
           this.couponList = res.data.data;
         } else if (res.data.status == 588) {

@@ -196,7 +196,7 @@ export default {
       });
     },
     getCardType() {
-      let port = "cardType/getCardTypeList";
+      let port = "handlers/cardType/getCardTypeList";
       let upData = this.$axios.upData(port);
       upData.then(res => {
         if (res.data.status == 200) {
@@ -215,7 +215,7 @@ export default {
       });
     },
     getCardData() {
-      let port = "cardManage/getCardList";
+      let port = "handlers/cardManage/getCardList";
       let createTime = "";
       let endDate = "";
       if (this.timeValue.length >= 2) {
@@ -291,7 +291,7 @@ export default {
         cardNo: data.cardNo,
         cardState: cardState
       };
-      let port = "cardManage/carSetState";
+      let port = "handlers/cardManage/carSetState";
       let specialData = this.$axios.specialData(port, obj);
       specialData.then(res => {
         if (res.data.status == 200) {

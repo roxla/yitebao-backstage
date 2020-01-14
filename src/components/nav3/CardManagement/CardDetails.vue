@@ -1,6 +1,6 @@
 <template>
   <div id="card-details">
-    <div class="details-page">
+    <div v-show="showPage" class="details-page">
       <div class="details-top-box">
         <div class="details-info-box">
           <div class="details-title-box">
@@ -68,7 +68,7 @@
             </div>
             <div class="details-info-item">
               <div class="details-info-left">卡有效期:</div>
-              <div class="details-info-right">114514114514</div>
+              <div class="details-info-right">{{}}</div>
             </div>
             <div class="details-info-item">
               <div class="details-info-left">卡折扣率:</div>
@@ -76,11 +76,11 @@
             </div>
             <div class="details-info-item">
               <div class="details-info-left">卡充值总额:</div>
-              <div class="details-info-right">114514</div>
+              <div class="details-info-right">{{}}</div>
             </div>
             <div class="details-info-item">
               <div class="details-info-left">卡消费总额:</div>
-              <div class="details-info-right">审核中</div>
+              <div class="details-info-right">{{}}</div>
             </div>
           </div>
         </div>
@@ -89,17 +89,17 @@
         <el-tabs class="card-details-tabs" type="border-card">
           <el-tab-pane label="卡操作记录">
             <el-table height="calc(100vh - 535px)" :data="setData" style="width: 100%">
-              <el-table-column align="center" prop="name" show-overflow-tooltip label="单号"></el-table-column>
-              <el-table-column align="center" prop="createTime" show-overflow-tooltip label="时间"></el-table-column>
-              <el-table-column align="center" prop="typeText" show-overflow-tooltip label="类型"></el-table-column>
-              <el-table-column align="center" prop="capital" show-overflow-tooltip label="金额"></el-table-column>
-              <el-table-column align="center" prop="detailsText" show-overflow-tooltip label="方式"></el-table-column>
               <el-table-column
                 align="center"
                 prop="cardOperateRecordNo"
                 show-overflow-tooltip
-                label="操作单号"
+                label="单号"
               ></el-table-column>
+              <el-table-column align="center" prop="createTime" show-overflow-tooltip label="时间"></el-table-column>
+              <el-table-column align="center" prop="typeText" show-overflow-tooltip label="类型"></el-table-column>
+              <el-table-column align="center" prop="capital" show-overflow-tooltip label="金额"></el-table-column>
+              <el-table-column align="center" prop="detailsText" show-overflow-tooltip label="方式"></el-table-column>
+              <el-table-column align="center" prop="bindNo" show-overflow-tooltip label="操作单号"></el-table-column>
               <el-table-column align="center" label="操作">
                 <template v-slot="scope">
                   <el-button
@@ -158,6 +158,7 @@
         </span>
       </DialogFramework>
     </div>
+    <router-view v-show="!showPage" />
   </div>
 </template>
 
@@ -188,7 +189,9 @@ export default {
       handler: function(val, oldVal) {
         if (this.$route.path == "/main/cardmanagement/carddetails") {
           this.showPage = true;
-          this.cardData = JSON.parse(this.$route.query.data);
+          if(!!this.$route.query.data){
+            this.cardData = JSON.parse(this.$route.query.data);
+          }
           this.getUserData(this.cardData.fkConsumerNo);
           this.getCardOperate();
         } else {
@@ -201,7 +204,7 @@ export default {
   methods: {
     // 获取用户信息
     getUserData(No) {
-      let port = "consumers/getConsumersInfo";
+      let port = "handlers/consumers/getConsumersInfo";
       let obj = {
         consumerNo: No
       };
@@ -209,7 +212,6 @@ export default {
       upData.then(res => {
         if (res.data.status == 200) {
           let data = res.data.data[0];
-          // console.log(data);
           data.createTime = this.formatDate(new Date(data.createTime));
           this.userData = data;
         } else if (res.data.status == 588) {
@@ -229,10 +231,9 @@ export default {
         pageNum: this.setPage,
         pageSize: this.pageSize
       };
-      let port = "cardOperateRecord/getCardOperateRecord";
+      let port = "handlers/cardOperateRecord/getCardOperateRecord";
       let upData = this.$axios.upData(port, obj, pages);
       upData.then(res => {
-        console.log(res);
         if (res.data.status == 200) {
           this.setTotal = res.data.data.total;
           let data = res.data.data.list;
@@ -275,7 +276,28 @@ export default {
     // 卡操作分页方法
     changeBeetle() {},
     getRowData(index, row) {
-      console.log(row);
+      let data = JSON.stringify(row.cardOperateRecordNo);
+      let url;
+      switch (row.operationDetails) {
+        case 0:
+          url = "carddetails/chargedetails";
+          break;
+        case 1:
+          url = "carddetails/givedetails";
+          break;
+        case 3:
+          url = "/main/backpage/laundryserviceorder";
+          break;
+        case 4:
+          url = "商品消费";
+          break;
+      }
+      this.$router.push({
+        path: url,
+        query: {
+          data
+        }
+      });
     },
     cardDel() {
       let cardState;
@@ -288,7 +310,7 @@ export default {
         cardNo: this.cardData.cardNo,
         cardState: cardState
       };
-      let port = "cardManage/carSetState";
+      let port = "handlers/cardManage/carSetState";
       let upData = this.$axios.upData(port, obj);
       upData.then(res => {
         if (res.data.status == 200) {

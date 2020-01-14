@@ -179,7 +179,7 @@ export default {
       this.dialogVisible = true;
     },
     getMerchantData(No) {
-      let port = "mer/getMerchantList";
+      let port = "handlers/mer/getMerchantList";
       let obj = {
         merchantNo: No
       };
@@ -208,7 +208,7 @@ export default {
     },
     changeMerchantState(state) {
       console.log(this.detailsData.fkMerchantNo);
-      let port = "mer/blackListMerchant";
+      let port = "handlers/mer/blackListMerchant";
       let obj = {
         merchantNo: this.detailsData.fkMerchantNo,
         merchantState: state

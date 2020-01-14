@@ -215,10 +215,10 @@ export default {
             cardTypeDetails: this.detail
           };
           if (!!this.cardTypeNo) {
-            port = "cardType/updateCardType";
+            port = "handlers/cardType/updateCardType";
             obj.cardTypeNo = this.cardTypeNo;
           } else {
-            port = "cardType/addCardType";
+            port = "handlers/cardType/addCardType";
           }
           let specialData = this.$axios.specialData(port, obj);
           specialData.then(res => {

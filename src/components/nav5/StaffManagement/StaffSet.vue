@@ -205,10 +205,10 @@ export default {
           }
         }
         if (!!this.data.workerNo) {
-          port = "worker/updateWorker";
+          port = "handlers/worker/updateWorker";
           // obj.workerNo = this.data.workerNo;
         } else {
-          port = "worker/addWorker";
+          port = "handlers/worker/addWorker";
           obj.pwd = this.pw;
         }
         let upData = this.$axios.upData(port, obj);

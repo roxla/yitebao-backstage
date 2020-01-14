@@ -128,7 +128,7 @@ export default {
       e.path[1].style.borderColor = "black";
     },
     getMerchantData() {
-      let port = "business/getBusinessListClose";
+      let port = "handlers/business/getBusinessListClose";
       let obj = {};
       let pages = {
         pageNum: this.currentPage,

@@ -22,6 +22,8 @@ import CardManagement from '@/components/nav3/CardManagement'
 import CardDetails from '@/components/nav3/CardManagement/CardDetails'
 import UserDetails from '@/components/nav3/UserManagement/UserDetails'
 import CardIssue from '@/components/nav3/CardIssue'
+import GiveDetails from '@/components/nav3/CardManagement/CardDetails/GiveDetails'
+import ChargeDetails from '@/components/nav3/CardManagement/CardDetails/ChargeDetails'
 // nav4
 import CardComprehensiveStatistics from '@/components/nav4/CardComprehensiveStatistics'
 // nav5
@@ -188,6 +190,26 @@ export default new Router({
                 requrireAuth: true,
                 title: "会员卡详情"
               },
+              children:[
+                {
+                  path: 'givedetails',
+                  name: 'givedetails',
+                  component: GiveDetails,
+                  meta: {
+                    requrireAuth: true,
+                    title: "赠送详情"
+                  }
+                },
+                {
+                  path: 'chargedetails',
+                  name: 'chargedetails',
+                  component: ChargeDetails,
+                  meta: {
+                    requrireAuth: true,
+                    title: "充值详情"
+                  }
+                }
+              ]
             }
           ]
         },

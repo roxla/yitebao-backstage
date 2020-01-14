@@ -145,7 +145,7 @@ export default {
       }
     },
     searchCard() {
-      let port = "cardType/getCardTypeList";
+      let port = "handlers/cardType/getCardTypeList";
       let obj = {
         typeName: this.cardName
       };
@@ -177,7 +177,7 @@ export default {
       // this.axios.get("/static/Json/cardList.json").then(res => {
       //   this.cardList = res.data;
       // });
-      let port = "cardType/getCardTypeList";
+      let port = "handlers/cardType/getCardTypeList";
       let upData = this.$axios.upData(port);
       upData.then(res => {
         if (res.data.status == 200) {
@@ -208,7 +208,7 @@ export default {
       this.dialogVisible = true;
     },
     del() {
-      let port = "cardType/deleteCardType";
+      let port = "handlers/cardType/deleteCardType";
       let obj = {
         cardTypeNo: this.delNo
       };

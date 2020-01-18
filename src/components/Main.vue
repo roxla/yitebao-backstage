@@ -182,7 +182,8 @@ export default {
               name: "总入账"
             },
             {
-              name: "用户统计"
+              name: "用户统计",
+              page: "/main/userstatistics"
             },
             {
               name: "办卡统计"

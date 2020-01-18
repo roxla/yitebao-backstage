@@ -6,7 +6,11 @@
           <i class="el-icon-circle-plus-outline el-icon--left"></i>添加
         </el-button>
       </div>
-      <div :style="{padding:staffList.length>0?'':'10px'}" class="staff-info-box">
+      <div
+        :style="{padding:staffList.length>0?'':'10px'}"
+        @scroll.passive="handleScroll($event,getStaffData)"
+        class="staff-info-box"
+      >
         <!-- 
           isStaff:员工与优惠券切换 传值 boolean 可选 默认员工， 
           staffInfo:
@@ -25,6 +29,7 @@
 
 <script>
 import CardFramework from "@/common/card-framework.vue";
+const pageSize = 24; //一页显示多少行
 export default {
   components: {
     CardFramework
@@ -32,6 +37,9 @@ export default {
   data() {
     return {
       showPage: true,
+      currentPage: 1,
+      pageSize: pageSize,
+      isList: true,
       staffList: []
     };
   },
@@ -40,6 +48,7 @@ export default {
       handler: function(val, oldVal) {
         if (this.$route.path == "/main/staffmanagement") {
           this.showPage = true;
+          this.isList = true;
           this.getStaffData();
         } else {
           this.showPage = false;
@@ -54,18 +63,27 @@ export default {
     },
     getStaffData() {
       let port = "handlers/worker/getWorkerList";
-      let upData = this.$axios.upData(port);
+      let obj = {};
+      let pages = {
+        pageNum: this.currentPage,
+        pageSize: this.pageSize
+      };
+      let upData = this.$axios.upData(port, obj, pages);
       upData.then(res => {
-        console.log(res);
         if (res.data.status == 200) {
-          let data = res.data.data;
-          for (let i = 0; i < data.length; i++) {
-            if (data[i].sex == "0") {
-              data[i].sexName = "男";
-            } else {
-              data[i].sexName = "女";
+          let data = res.data.data.list;
+          if (data.length > 0) {
+            for (let i = 0; i < data.length; i++) {
+              if (data[i].sex == "0") {
+                data[i].sexName = "男";
+              } else {
+                data[i].sexName = "女";
+              }
+              this.staffList.push(data[i]);
             }
-            this.staffList = data;
+            this.currentPage = this.currentPage += 1;
+          } else {
+            this.isList = false;
           }
         } else if (res.data.status == 588) {
           this.$message.error(res.data.msg);
@@ -74,6 +92,17 @@ export default {
           this.$message.error(res.data.msg);
         }
       });
+    },
+    // 下拉检测
+    handleScroll(e, func) {
+      // 滚动条距离底部的距离scrollBottom
+      let scrollBottom =
+        e.target.scrollHeight - e.target.scrollTop - e.target.clientHeight;
+      if (scrollBottom === 0) {
+        if(!!this.isList){
+          func();
+        }
+      }
     }
   }
 };

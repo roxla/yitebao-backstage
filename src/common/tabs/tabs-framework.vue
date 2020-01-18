@@ -161,6 +161,7 @@ export default {
   border-width: 0px 0px 40px;
   border-style: solid;
   border-color: #001d3e;
+  cursor: pointer;
 }
 .pentagon::before {
   content: "";

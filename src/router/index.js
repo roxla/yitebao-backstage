@@ -22,10 +22,10 @@ import CardManagement from '@/components/nav3/CardManagement'
 import CardDetails from '@/components/nav3/CardManagement/CardDetails'
 import UserDetails from '@/components/nav3/UserManagement/UserDetails'
 import CardIssue from '@/components/nav3/CardIssue'
-import GiveDetails from '@/components/nav3/CardManagement/CardDetails/GiveDetails'
 import ChargeDetails from '@/components/nav3/CardManagement/CardDetails/ChargeDetails'
 // nav4
 import CardComprehensiveStatistics from '@/components/nav4/CardComprehensiveStatistics'
+import UserStatistics from '@/components/nav4/UserStatistics'
 // nav5
 import AppIndexSet from '@/components/nav5/AppIndexSet'
 import SetImgList from '@/components/nav5/AppIndexSet/SetImgList'
@@ -192,21 +192,12 @@ export default new Router({
               },
               children:[
                 {
-                  path: 'givedetails',
-                  name: 'givedetails',
-                  component: GiveDetails,
-                  meta: {
-                    requrireAuth: true,
-                    title: "赠送详情"
-                  }
-                },
-                {
                   path: 'chargedetails',
                   name: 'chargedetails',
                   component: ChargeDetails,
                   meta: {
                     requrireAuth: true,
-                    title: "充值详情"
+                    title: "充值赠送详情"
                   }
                 }
               ]
@@ -223,6 +214,15 @@ export default new Router({
           }
         },
         // nav4
+        {
+          path: 'userstatistics',
+          name: 'userstatistics',
+          component: UserStatistics,
+          meta: {
+            requrireAuth: true,
+            title: "用户统计"
+          }
+        },
         {
           path: 'cardcomprehensivestatistics',
           name: 'cardcomprehensivestatistics',

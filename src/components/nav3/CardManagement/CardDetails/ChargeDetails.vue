@@ -11,31 +11,31 @@
         <div class="charge-info-main">
           <div class="charge-info-item">
             <div class="charge-info-left">卡号:</div>
-            <div class="charge-info-right">{{}}</div>
+            <div class="charge-info-right">{{charge.fkCardNo}}</div>
           </div>
           <div class="charge-info-item">
             <div class="charge-info-left">操作时间:</div>
-            <div class="charge-info-right">{{}}</div>
+            <div class="charge-info-right">{{charge.createTime}}</div>
           </div>
           <div class="charge-info-item">
             <div class="charge-info-left">操作金额:</div>
-            <div class="charge-info-right">{{}}</div>
+            <div class="charge-info-right">{{charge.capital}}</div>
           </div>
           <div class="charge-info-item">
             <div class="charge-info-left">操作类型:</div>
-            <div class="charge-info-right">{{}}</div>
+            <div class="charge-info-right">{{charge.typeText}}</div>
           </div>
           <div class="charge-info-item">
             <div class="charge-info-left">操作方式:</div>
-            <div class="charge-info-right">{{}}</div>
+            <div class="charge-info-right">{{charge.detailsText}}</div>
           </div>
           <div class="charge-info-item">
             <div class="charge-info-left">卡类型:</div>
-            <div class="charge-info-right">{{}}</div>
+            <div class="charge-info-right">{{charge.cardTypeName}}</div>
           </div>
           <div class="charge-info-item">
             <div class="charge-info-left">流水号:</div>
-            <div class="charge-info-right">{{}}</div>
+            <div class="charge-info-right">{{charge.cardOperateRecordNo}}</div>
           </div>
         </div>
       </div>
@@ -49,31 +49,31 @@
         <div class="charge-info-main">
           <div class="charge-info-item">
             <div class="charge-info-left">卡号:</div>
-            <div class="charge-info-right">{{}}</div>
+            <div class="charge-info-right">{{give.fkCardNo}}</div>
           </div>
           <div class="charge-info-item">
             <div class="charge-info-left">操作时间:</div>
-            <div class="charge-info-right">{{}}</div>
+            <div class="charge-info-right">{{give.createTime}}</div>
           </div>
           <div class="charge-info-item">
             <div class="charge-info-left">操作金额:</div>
-            <div class="charge-info-right">{{}}</div>
+            <div class="charge-info-right">{{give.capital}}</div>
           </div>
           <div class="charge-info-item">
             <div class="charge-info-left">操作类型:</div>
-            <div class="charge-info-right">{{}}</div>
+            <div class="charge-info-right">{{give.typeText}}</div>
           </div>
           <div class="charge-info-item">
             <div class="charge-info-left">操作方式:</div>
-            <div class="charge-info-right">{{}}</div>
+            <div class="charge-info-right">{{give.detailsText}}</div>
           </div>
           <div class="charge-info-item">
             <div class="charge-info-left">卡类型:</div>
-            <div class="charge-info-right">{{}}</div>
+            <div class="charge-info-right">{{give.cardTypeName}}</div>
           </div>
           <div class="charge-info-item">
             <div class="charge-info-left">流水号:</div>
-            <div class="charge-info-right">{{}}</div>
+            <div class="charge-info-right">{{give.cardOperateRecordNo}}</div>
           </div>
         </div>
       </div>
@@ -85,14 +85,67 @@
 export default {
   data() {
     return {
-      data: {}
+      charge: {},
+      give: {}
     };
   },
-  created(){
-    this.data = JSON.parse(this.$route.query.data);
-    console.log(this.data);
+  created() {
+    this.getData();
   },
-  methods: {}
+  methods: {
+    getData() {
+      let data = JSON.parse(this.$route.query.data);
+      // console.log(data);
+      if (data.detailsText == "充值") {
+        this.charge = data;
+        this.getOtherData("充值", data);
+      } else if (data.detailsText == "赠送") {
+        this.give = data;
+        this.getOtherData("赠送", data);
+      }
+    },
+    getOtherData(type, data) {
+      let port = "handlers/cardOperateRecord/getCardOperateRecord";
+      let obj = {
+        cardOperateRecordNo: data.bindNo
+      };
+      if (type == "赠送") {
+        obj.operationDetails = 0;
+      } else if (type == "充值") {
+        obj.operationDetails = 1;
+      }
+      let upData = this.$axios.upData(port, obj);
+      upData.then(res => {
+        if (res.data.status == 200) {
+          let data = res.data.data.list[0];
+          if (!!data.operationType) {
+            data.typeText = "收入";
+          } else {
+            data.typeText = "支出";
+          }
+          switch (data.operationDetails) {
+            case 0:
+              data.detailsText = "充值";
+              break;
+            case 1:
+              data.detailsText = "赠送";
+              break;
+          }
+          if (type == "赠送") {
+            this.charge = data;
+          } else if (type == "充值") {
+            this.give = data;
+          }
+          console.log(this.give);
+        } else if (res.data.status == 588) {
+          this.$message.error(res.data.msg);
+          this.checkLogin();
+        } else {
+          this.$message.error(res.data.msg);
+        }
+      });
+    }
+  }
 };
 </script>
 

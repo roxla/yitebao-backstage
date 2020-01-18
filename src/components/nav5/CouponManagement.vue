@@ -77,6 +77,7 @@ export default {
       let port = "activity/coupon/getCouponList";
       let upData = this.$axios.upData(port);
       upData.then(res => {
+        console.log(res);
         if (res.data.status == 200) {
           this.couponList = res.data.data;
         } else if (res.data.status == 588) {

@@ -130,8 +130,6 @@ export default {
   flex-wrap: wrap;
   justify-content: flex-start;
   align-items: center;
-}
-.card-button-box {
   margin-bottom: 20px;
   padding: 10px;
 }

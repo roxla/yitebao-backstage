@@ -76,7 +76,7 @@
             </div>
             <div class="details-info-item">
               <div class="details-info-left">卡充值总额:</div>
-              <div class="details-info-right">{{}}</div>
+              <div class="details-info-right">{{cardData.rechargeMoney}}</div>
             </div>
             <div class="details-info-item">
               <div class="details-info-left">卡消费总额:</div>
@@ -189,7 +189,7 @@ export default {
       handler: function(val, oldVal) {
         if (this.$route.path == "/main/cardmanagement/carddetails") {
           this.showPage = true;
-          if(!!this.$route.query.data){
+          if (!!this.$route.query.data) {
             this.cardData = JSON.parse(this.$route.query.data);
           }
           this.getUserData(this.cardData.fkConsumerNo);
@@ -211,8 +211,11 @@ export default {
       let upData = this.$axios.upData(port, obj);
       upData.then(res => {
         if (res.data.status == 200) {
-          let data = res.data.data[0];
-          data.createTime = this.formatDate(new Date(data.createTime));
+          let data = res.data.data.list[0];
+          console.log(res);
+          if (!!data.createTime) {
+            data.createTime = this.formatDate(new Date(data.createTime));
+          }
           this.userData = data;
         } else if (res.data.status == 588) {
           this.$message.error(res.data.msg);
@@ -237,6 +240,7 @@ export default {
         if (res.data.status == 200) {
           this.setTotal = res.data.data.total;
           let data = res.data.data.list;
+          console.log(data);
           for (let i = 0; i < data.length; i++) {
             if (!!data[i].operationType) {
               data[i].typeText = "收入";
@@ -276,14 +280,14 @@ export default {
     // 卡操作分页方法
     changeBeetle() {},
     getRowData(index, row) {
-      let data = JSON.stringify(row.cardOperateRecordNo);
+      let data = JSON.stringify(row);
       let url;
       switch (row.operationDetails) {
         case 0:
           url = "carddetails/chargedetails";
           break;
         case 1:
-          url = "carddetails/givedetails";
+          url = "carddetails/chargedetails";
           break;
         case 3:
           url = "/main/backpage/laundryserviceorder";

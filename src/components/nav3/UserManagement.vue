@@ -26,28 +26,36 @@
           v-model="timeValue"
           type="datetimerange"
           range-separator="至"
-          start-placeholder="创建开始日期"
-          end-placeholder="创建结束日期"
+          start-placeholder="注册开始日期"
+          end-placeholder="注册结束日期"
           value-format="yyyy-MM-dd HH:mm:ss"
         ></el-date-picker>
-        <el-button @click="getuserData()" type="primary" class="user-plus">
+        <el-button @click="getUserData()" type="primary" class="user-plus">
           <i class="el-icon-search el-icon--left"></i>搜索
         </el-button>
       </div>
       <div class="user-info-box">
         <el-table height="calc(100vh - 222px)" :data="userList" style="width: 100%">
-          <el-table-column show-overflow-tooltip align="center" label="用户昵称" prop="userNo"></el-table-column>
-          <el-table-column show-overflow-tooltip align="center" label="电话" prop="userTypeName"></el-table-column>
-          <el-table-column show-overflow-tooltip align="center" label="性别" prop="createTime"></el-table-column>
-          <el-table-column show-overflow-tooltip align="center" label="生日" prop="userStateText"></el-table-column>
-          <el-table-column show-overflow-tooltip align="center" label="注册日期" prop="userStateText"></el-table-column>
-          <el-table-column show-overflow-tooltip align="center" label="已有会员卡数" prop="userStateText"></el-table-column>
-          <el-table-column align="center" label="操作">
+          <el-table-column show-overflow-tooltip align="center" label="用户昵称" prop="nickName"></el-table-column>
+          <el-table-column show-overflow-tooltip align="center" label="电话" prop="phone"></el-table-column>
+          <el-table-column show-overflow-tooltip align="center" label="性别" prop="sexText"></el-table-column>
+          <el-table-column show-overflow-tooltip align="center" label="生日" prop>
+            <template v-slot="scope">{{scope.row.birthday | fulldate}}</template>
+          </el-table-column>
+          <el-table-column
+            min-width="150"
+            show-overflow-tooltip
+            align="center"
+            label="注册日期"
+            prop="createTime"
+          ></el-table-column>
+          <el-table-column show-overflow-tooltip align="center" label="已有会员卡数" prop="cardNum"></el-table-column>
+          <el-table-column min-width="120" align="center" label="操作">
             <template slot-scope="scope">
-              <el-button @click="go()" type="primary" size="mini">详情</el-button>
+              <el-button @click="go('usermanagement/userdetails',scope.row)" type="primary" size="mini">详情</el-button>
               <el-popconfirm
                 icon="el-icon-info"
-                title="确认冻结该卡？"
+                title="确认拉黑该用户？"
                 @onConfirm="userDelete(scope.$index, scope.row)"
               >
                 <el-button
@@ -55,11 +63,11 @@
                   size="mini"
                   type="warning"
                   slot="reference"
-                >冻结</el-button>
+                >拉黑</el-button>
               </el-popconfirm>
               <el-popconfirm
                 icon="el-icon-info"
-                title="确认解冻该卡？"
+                title="确认解除黑名单？"
                 @onConfirm="userDelete(scope.$index, scope.row)"
               >
                 <el-button
@@ -67,7 +75,7 @@
                   size="mini"
                   type="warning"
                   slot="reference"
-                >解冻</el-button>
+                >解除</el-button>
               </el-popconfirm>
             </template>
           </el-table-column>
@@ -75,7 +83,7 @@
         <div style="padding: 5px 0px;">
           <el-pagination
             :current-page.sync="currentPage"
-            @current-change="getuserData"
+            @current-change="getUserData"
             :page-size="pageSize"
             layout="total, prev, pager, next, jumper"
             :total="total"
@@ -103,7 +111,7 @@ export default {
     };
   },
   created() {
-    this.getuserData();
+    this.getUserData();
   },
   watch: {
     $route: {
@@ -135,7 +143,50 @@ export default {
         }
       });
     },
-    getuserData() {},
+    getUserData() {
+      let port = "handlers/consumers/getConsumersInfo";
+      let obj = {
+        phone: this.userName,
+        nickName: this.userTel,
+        createTime: this.timeValue[0],
+        endDate: this.timeValue[1]
+      };
+      let pages = {
+        pageNum: this.currentPage,
+        pageSize: this.pageSize
+      };
+      let upData = this.$axios.upData(port, obj, pages);
+      upData.then(res => {
+        if (res.data.status == 200) {
+          let data = res.data.data.list;
+          for (let i = 0; i < data.length; i++) {
+            switch (data[i].sex) {
+              case "0":
+                data[i].sexText = "女";
+                break;
+              case 0:
+                data[i].sexText = "女";
+                break;
+              case "1":
+                data[i].sexText = "男";
+                break;
+              case 1:
+                data[i].sexText = "男";
+                break;
+            }
+            data[i].createTime = this.formatDate(new Date(data[i].createTime));
+            data[i].birthday = this.formatDate(new Date(data[i].birthday));
+          }
+          this.userList = data;
+          this.total = res.data.data.total;
+        } else if (res.data.status == 588) {
+          this.$message.error(res.data.msg);
+          this.checkLogin();
+        } else {
+          this.$message.error(res.data.msg);
+        }
+      });
+    },
     userDelete() {}
   }
 };

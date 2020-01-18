@@ -188,17 +188,17 @@ export default {
       }
     },
     getImgData() {
-      this.axios.get("/static/Json/appindex.json").then(res => {
+      this.axios.get("./static/Json/appindex.json").then(res => {
         this.imgList = res.data.imgList;
       });
     },
     getShopData() {
-      this.axios.get("/static/Json/appindex.json").then(res => {
+      this.axios.get("./static/Json/appindex.json").then(res => {
         this.shopList = res.data.shopList;
       });
     },
     getBusinessData() {
-      this.axios.get("/static/Json/appindex.json").then(res => {
+      this.axios.get("./static/Json/appindex.json").then(res => {
         this.businessList = res.data.business;
       });
     },

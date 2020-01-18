@@ -85,30 +85,30 @@ export default {
 }
 /* card-management */
 .search-select .el-input__inner {
-  border: 2px solid black;
-  height: 41px;
-  line-height: 41px;
+  border: 2px solid black !important;
+  height: 41px !important;
+  line-height: 41px !important;
 }
 .el-select.search-select:hover,
 .search-select .el-input__inner,
 .search-select .el-input__inner:hover {
-  border-color: black;
+  border-color: black !important;
 }
 .search-select .el-input__inner:focus,
 .search-select .el-input.is-focus .el-input__inner {
-  border-color: #1abc9c;
+  border-color: #1abc9c !important;
 }
 .search-date {
-  border: 2px solid black;
-  height: 41px;
-  line-height: 41px;
+  border: 2px solid black !important;
+  height: 41px !important;
+  line-height: 41px !important;
 }
 .search-date:hover {
-  border-color: black;
+  border-color: black !important;
 }
 .search-date.is-active,
 .search-date.is-active:hover {
-  border-color: #1abc9c;
+  border-color: #1abc9c !important;
 }
 /* cardSet */
 .avatar-uploader .el-upload{
@@ -116,9 +116,11 @@ export default {
   height: 100%;
 }
 /* userDetails & cardDetails */
-.card-details-tabs .el-tabs__content,
-.user-details-tabs .el-tabs__content{
+.card-details-tabs .el-tabs__content{
   padding-bottom: 0px;
+}
+.user-details-tabs .el-tabs__content{
+  padding: 0px 10px;
 }
 /* setImgList */
 .search-set-input input{

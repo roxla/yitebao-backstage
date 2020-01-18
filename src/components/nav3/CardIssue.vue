@@ -134,6 +134,14 @@
               ></el-option>
             </el-select>
             <div style="width: 10px;"></div>
+            <el-input class="search-set-input" placeholder="请输入发行单位" v-model="shopValue"></el-input>
+            <div style="width: 10px;"></div>
+            <el-select class="search-select" v-model="isUse" placeholder="是否使用">
+              <el-option label="全部状态" value></el-option>
+              <el-option label="已使用" :value="true"></el-option>
+              <el-option label="未使用" :value="false"></el-option>
+            </el-select>
+            <div style="width: 10px;"></div>
             <el-button @click="getCardData()" type="primary" class="card-plus">
               <i class="el-icon-search el-icon--left"></i>搜索
             </el-button>
@@ -143,9 +151,11 @@
               <el-table-column prop="date" align="center" show-overflow-tooltip label="发行时间"></el-table-column>
               <el-table-column prop="name" align="center" show-overflow-tooltip label="发行员工"></el-table-column>
               <el-table-column prop="address" align="center" show-overflow-tooltip label="发行单位名称"></el-table-column>
-              <el-table-column prop="date" align="center" show-overflow-tooltip label="发行号段"></el-table-column>
+              <el-table-column prop="date" align="center" show-overflow-tooltip label="卡号"></el-table-column>
               <el-table-column prop="name" align="center" show-overflow-tooltip label="发行卡类型"></el-table-column>
-              <el-table-column prop="address" align="center" show-overflow-tooltip label="总金额"></el-table-column>
+              <el-table-column prop="address" align="center" show-overflow-tooltip label="充值额"></el-table-column>
+              <el-table-column prop="address" align="center" show-overflow-tooltip label="赠送额"></el-table-column>
+              <el-table-column prop="address" align="center" show-overflow-tooltip label="是否使用"></el-table-column>
               <el-table-column align="center" label="操作">
                 <template slot-scope="scope">
                   <el-button
@@ -220,11 +230,14 @@ export default {
       timeValue: [],
       userOptions: [],
       userValue: "",
+      shopValue: "",
+      isUse: "",
       tableData: [],
       dialogVisible1: false
     };
   },
   created() {
+    this.getStaffData();
     this.getCardType();
   },
   methods: {
@@ -253,6 +266,22 @@ export default {
           this.dialogVisible1 = true;
         }
       }
+    },
+    getStaffData() {
+      let port = "handlers/worker/getWorkerList";
+      let upData = this.$axios.upData(port);
+      upData.then(res => {
+        if (res.data.status == 200) {
+          let data = res.data.data.list;
+          console.log(data);
+        } else if (res.data.status == 588) {
+          this.$message.error(res.data.msg);
+          this.checkLogin();
+        } else {
+          this.$message.error(res.data.msg);
+        }
+      })
+      this.userOptions;
     },
     getCardData() {},
     export2Excel(index, data) {
@@ -323,8 +352,11 @@ export default {
   padding: 0px 20px 10px;
   align-items: center;
 }
+.search-set-input {
+  width: 20%;
+}
 .search-select {
-  width: 18%;
+  width: 15%;
 }
 .search-date {
   width: 36%;

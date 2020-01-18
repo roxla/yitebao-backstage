@@ -102,7 +102,7 @@ export default {
         item4: "",
         item5: ""
       };
-      this.axios.get("/static/Json/merchantApplication.json").then(res => {
+      this.axios.get("./static/Json/merchantApplication.json").then(res => {
         this.merchantList = res.data.data;
         this.total = res.data.total;
       });

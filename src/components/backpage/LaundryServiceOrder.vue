@@ -140,7 +140,7 @@
                       <img :src="shopIcon" alt="img" />
                     </div>
                     <div class="table-text-box">
-                      <div class="table-text-main">儿童服装花点棉衣</div>
+                      <div class="table-text-main">儿童服装花点棉衣{{scope}}</div>
                       <div class="table-text-side">干洗—档次</div>
                     </div>
                   </div>
@@ -174,7 +174,7 @@
               ></el-table-column>
               <el-table-column min-width="70" align="center" label="操作">
                 <template v-slot="scope">
-                  <el-button>123</el-button>
+                  <el-button>123{{scope}}</el-button>
                 </template>
               </el-table-column>
             </el-table>

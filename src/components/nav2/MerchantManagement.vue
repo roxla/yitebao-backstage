@@ -187,6 +187,7 @@ export default {
               data[i].logo = "./static/img/zhanwei.jpg";
             }
           }
+          console.log(res);
           this.merchantList = data;
         } else if (res.data.status == 588) {
           this.$message.error(res.data.msg);

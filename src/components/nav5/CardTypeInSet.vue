@@ -12,7 +12,7 @@
           />
         </div>
         <div style="padding: 0px 15px;"></div>
-        <el-button @click="searchCard" type="primary" class="card-plus">
+        <el-button @click="getCardData" type="primary" class="card-plus">
           <i class="el-icon-search el-icon--left"></i>搜索
         </el-button>
         <div style="padding: 0px 15px;"></div>
@@ -20,7 +20,11 @@
           <i class="el-icon-circle-plus-outline el-icon--left"></i>添加
         </el-button>
       </div>
-      <div :style="{padding:cardList.length>0?'':'10px'}" class="card-info-box">
+      <div
+        :style="{padding:cardList.length>0?'':'10px'}"
+        @scroll.passive="handleScroll($event,getCardData)"
+        class="card-info-box"
+      >
         <div class="card-box-none" v-show="cardList.length<=0">暂无卡类型</div>
         <div class="card-box" v-for="(item,index) in cardList" :key="index">
           <div class="card-item-box">
@@ -95,6 +99,7 @@
 
 <script>
 import DialogFramework from "@/common/dialog-framework.vue";
+const pageSize = 24; //一页显示多少行
 export default {
   components: {
     DialogFramework
@@ -103,6 +108,9 @@ export default {
     return {
       showPage: true,
       cardName: "",
+      currentPage: 1,
+      pageSize: pageSize,
+      isList: true,
       cardList: [],
       dialogVisible: false,
       delName: "",
@@ -114,6 +122,7 @@ export default {
       handler: function(val, oldVal) {
         if (this.$route.path == "/main/cardtypeset") {
           this.showPage = true;
+          this.isList = true;
           this.getCardData();
         } else {
           this.showPage = false;
@@ -144,27 +153,38 @@ export default {
         this.$router.push({ path: url });
       }
     },
-    searchCard() {
+    getCardData() {
+      // this.axios.get("/static/Json/cardList.json").then(res => {
+      //   this.cardList = res.data;
+      // });
       let port = "handlers/cardType/getCardTypeList";
       let obj = {
         typeName: this.cardName
       };
-      let upData = this.$axios.upData(port, obj);
+      let pages = {
+        pageNum: this.currentPage,
+        pageSize: this.pageSize
+      };
+      let upData = this.$axios.upData(port, obj, pages);
       upData.then(res => {
+        console.log(res);
         if (res.data.status == 200) {
-          let data = res.data.data;
-          for (let i = 0; i < data.length; i++) {
-            data[i].cardDiscount = parseFloat(data[i].cardDiscount) / 10;
-            if (!data[i].cardTypeImg) {
-              data[i].cardTypeImg = "./static/img/zhanwei.jpg";
+          let data = res.data.data.list;
+          if (data.length > 0) {
+            for (let i = 0; i < data.length; i++) {
+              data[i].cardDiscount = parseFloat(data[i].cardDiscount) / 10;
+              if (!data[i].cardTypeImg) {
+                data[i].cardTypeImg = "./static/img/zhanwei.jpg";
+              }
+              if (!!data[i].isBoon) {
+                data[i].isBoonType = "团洗";
+              } else {
+                data[i].isBoonType = "非团";
+              }
+              this.cardList.push(data[i]);
             }
-            if (!!data[i].isBoon) {
-              data[i].isBoonType = "团洗";
-            } else {
-              data[i].isBoonType = "非团";
-            }
+            this.currentPage = this.currentPage += 1;
           }
-          this.cardList = data;
         } else if (res.data.status == 588) {
           this.$message.error(res.data.msg);
           this.checkLogin();
@@ -173,34 +193,16 @@ export default {
         }
       });
     },
-    getCardData() {
-      // this.axios.get("/static/Json/cardList.json").then(res => {
-      //   this.cardList = res.data;
-      // });
-      let port = "handlers/cardType/getCardTypeList";
-      let upData = this.$axios.upData(port);
-      upData.then(res => {
-        if (res.data.status == 200) {
-          let data = res.data.data;
-          for (let i = 0; i < data.length; i++) {
-            data[i].cardDiscount = parseFloat(data[i].cardDiscount) / 10;
-            if (!data[i].cardTypeImg) {
-              data[i].cardTypeImg = "./static/img/zhanwei.jpg";
-            }
-            if (!!data[i].isBoon) {
-              data[i].isBoonType = "团洗";
-            } else {
-              data[i].isBoonType = "非团";
-            }
-          }
-          this.cardList = data;
-        } else if (res.data.status == 588) {
-          this.$message.error(res.data.msg);
-          this.checkLogin();
-        } else {
-          this.$message.error(res.data.msg);
+    // 下拉检测
+    handleScroll(e, func) {
+      // 滚动条距离底部的距离scrollBottom
+      let scrollBottom =
+        e.target.scrollHeight - e.target.scrollTop - e.target.clientHeight;
+      if (scrollBottom === 0) {
+        if (!!this.isList) {
+          func();
         }
-      });
+      }
     },
     cardDel(data) {
       this.delNo = data.cardTypeNo;
@@ -216,7 +218,7 @@ export default {
       specialData.then(res => {
         if (res.data.status == 200) {
           this.getCardData();
-          this.$message.success('删除成功');
+          this.$message.success("删除成功");
           this.dialogVisible = false;
         } else if (res.data.status == 588) {
           this.$message.error(res.data.msg);

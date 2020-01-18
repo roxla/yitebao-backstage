@@ -7,6 +7,8 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import * as axios from '@/assets/axiosServer.js'
 import $axios from 'axios';
+import getAllDate from '@/assets/timeSet/getAllDate.js'
+import isLeapYear from '@/assets/isLeapYear.js'
 import './icons'
 // 高德地图
 import AMap from 'vue-amap'
@@ -23,6 +25,8 @@ Vue.config.productionTip = false
 
 Vue.prototype.axios = $axios; // axios原生调用
 Vue.prototype.$axios = axios; // axiosServer.js接口调用
+Vue.prototype.$date = getAllDate; // 获取范围全部日期
+Vue.prototype.$leap = isLeapYear; //判断是否为闰年
 Vue.prototype.beforeAvatarUpload = function (file) { // 上传图片大小限制
   const fileSize = file.size / 1024 < 513;
   if (!fileSize) {
@@ -77,3 +81,27 @@ new Vue({
 //   res.headers.common['token'] = sessionStorage.getItem('token') || ''
 //   return res;
 // });
+
+// 全日期过滤
+Vue.filter('fulldate', function (value) {
+  let MD = value.split("-")[0] + "-" + value.split("-")[1] + "-" + value.split("-")[2].split(" ")[0];
+  return MD;
+})
+
+// 日期过滤
+Vue.filter('date', function (value) {
+  let MD = value.split("-")[1] + "-" + value.split("-")[2].split(" ")[0];
+  return MD;
+})
+
+// 全时间过滤
+Vue.filter('fulltime', function (value) {
+  let HM = value.split("-")[2].split(" ")[1].split(":")[0] + ":" + value.split("-")[2].split(" ")[1].split(":")[1] + ":" + value.split("-")[2].split(" ")[1].split(":")[2];
+  return HM;
+})
+
+// 时间过滤
+Vue.filter('time', function (value) {
+  let HM = value.split("-")[2].split(" ")[1].split(":")[0] + ":" + value.split("-")[2].split(" ")[1].split(":")[1];
+  return HM;
+})

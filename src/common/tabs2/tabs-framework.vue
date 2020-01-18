@@ -138,6 +138,7 @@ export default {
   padding: 5px 0px;
   cursor: pointer;
   box-shadow: 0px 0px 6px rgb(185,208,254);
+  cursor: pointer;
 }
 .tab--active .tabs__item {
   background-color: #1C9781;

@@ -56,5 +56,6 @@ export default {
 
 <style scoped>
 .tab__pane {
+  width: 100%;
 }
 </style>

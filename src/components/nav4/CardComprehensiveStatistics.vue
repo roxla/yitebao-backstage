@@ -1,83 +1,94 @@
 <template>
   <div id="card-statistics">
     <div class="card-page" v-show="showPage">
-      <div class="card-button-box">
-        <el-select class="search-select" v-model="shopValue" placeholder="请选择店铺">
-          <el-option label="全部店铺" value></el-option>
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          ></el-option>
-        </el-select>
-        <div style="padding: 0px 5px;"></div>
-        <el-date-picker
-          class="search-date"
-          :editable="false"
-          v-model="timeValue"
-          type="datetimerange"
-          range-separator="至"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          value-format="yyyy-MM-dd HH:mm:ss"
-        ></el-date-picker>
-        <div style="padding: 0px 15px;"></div>
-        <el-button @click="getCardData()" type="primary" class="card-plus">
-          <i class="el-icon-search el-icon--left"></i>搜索
-        </el-button>
-      </div>
-      <div class="card-info-box">
-        <div class="card-title-box">
-          <div class="card-info-title">
-            卡消费流水
-            <span></span>
-          </div>
-          <div class="card-title-button">
-            <el-button type="primary" class="card-plus">
-              <i class="el-icon-circle-plus-outline el-icon--left"></i>添加
-            </el-button>
-          </div>
+      <div class="card-button-box" v-show="active != 0">
+        <div style="padding: 0px 5px;">
+          <el-radio-group @change="changeTime()" v-model="radio">
+            <el-radio-button label="mon">按月统计</el-radio-button>
+            <el-radio-button label="year">按年统计</el-radio-button>
+          </el-radio-group>
+        </div>
+        <div v-show="radio === 'mon'">
+          <el-date-picker
+            :clearable="false"
+            @change="changeTime()"
+            v-model="monValue"
+            type="month"
+            placeholder="选择月"
+            value-format="yyyy-MM"
+            :picker-options="pickerOptions"
+          ></el-date-picker>
+        </div>
+        <div v-show="radio === 'year'">
+          <el-date-picker
+            :clearable="false"
+            @change="changeTime()"
+            v-model="yearValue"
+            type="year"
+            placeholder="选择年"
+            value-format="yyyy"
+            :picker-options="pickerOptions"
+          ></el-date-picker>
         </div>
       </div>
-      <div class="card-info-box">
-        <div class="card-title-box">
-          <div class="card-info-title">
-            卡充值流水
-            <span></span>
-          </div>
-          <div class="card-title-button">
-            <el-button type="primary" class="card-plus">
-              <i class="el-icon-circle-plus-outline el-icon--left"></i>添加
-            </el-button>
-          </div>
-        </div>
-      </div>
-      <div class="card-info-box">
-        <div class="card-title-box">
-          <div class="card-info-title">
-            卡余额统计
-            <span></span>
-          </div>
-          <div class="card-title-button">
-            <el-button type="primary" class="card-plus">
-              <i class="el-icon-circle-plus-outline el-icon--left"></i>添加
-            </el-button>
-          </div>
-        </div>
+      <div class="card-statistics-main">
+        <tabs @click="handleClick" v-model="active">
+          <tab title="统计"></tab>
+          <tab title="充值报表"></tab>
+          <tab title="消费报表"></tab>
+          <tab title="办卡报表"></tab>
+        </tabs>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import tabs from "@/common/tabs/tabs-framework.vue";
+import tab from "@/common/tabs/tab-framework.vue";
+// 图表
+import chart from "vue-echarts/components/ECharts";
 export default {
+  components: {
+    tabs,
+    tab,
+    chart
+  },
+  computed: {
+    tYear() {
+      const date = String(new Date().getFullYear());
+      return date;
+    },
+    tMon() {
+      const date = new Date();
+      let month = date.getMonth() + 1;
+      if (month < 10) {
+        month = "0" + month;
+      }
+      let mon = date.getFullYear() + "-" + month;
+      return mon;
+    },
+    tDay() {
+      const date = new Date();
+      let day = date.getDate();
+      if (day < 10) {
+        day = "0" + day;
+      }
+      return day;
+    }
+  },
   data() {
     return {
-      showPage:true,
-      cardName:"",
-      options:[],
-      shopValue:""
+      showPage: true,
+      active: 0,
+      radio: "mon",
+      monValue: "",
+      yearValue: "",
+      pickerOptions: {
+        disabledDate(time) {
+          return time.getTime() > Date.now();
+        }
+      }
     };
   },
   watch: {
@@ -92,20 +103,65 @@ export default {
       immediate: true
     }
   },
-  methods:{
-    // 选中input边框变色
-    changeColor(e) {
-      e.path[1].style.borderColor = "#1ABC9C";
+  created() {
+    this.timeSet();
+  },
+  methods: {
+    // tabs方法
+    handleClick(tab, event) {
+      this.active = tab;
     },
-    reChange(e) {
-      e.path[1].style.borderColor = "black";
+    // 时间初始化
+    timeSet() {
+      this.yearValue = this.tYear;
+      this.monValue = this.tMon;
+      let x = this.$date(this.tMon + "-" + "01", this.tMon + "-" + this.tDay);
     },
+    // 时间更变
+    changeTime() {
+      if (this.radio === "mon") {
+        if (this.monValue == this.tMon) {
+          //返回当年月份的日期
+          let x = this.$date(
+            this.tMon + "-" + "01",
+            this.tMon + "-" + this.tDay
+          );
+          console.log(x);
+        } else {
+          let year = this.monValue.split("-")[0];
+          let mon = this.monValue.split("-")[1];
+          let day = this.$leap(year, mon); //返回当年月份的最后一天
+          let x = this.$date(
+            year + "-" + mon + "-" + "01",
+            year + "-" + mon + "-" + day
+          );
+          console.log(x);
+        }
+      } else if (this.radio === "year") {
+        if (this.yearValue == this.tYear) {
+          const date = new Date();
+          let mon = date.getMonth() + 1;
+          let x = [];
+          for (let i = 1; i <= mon; i++) {
+            x.push(i + "月");
+          }
+          console.log(x);
+        } else {
+          let x = [];
+          for (let i = 1; i < 13; i++) {
+            x.push(i + "月");
+          }
+          console.log(x);
+        }
+      }
+    },
+    
   }
 };
 </script>
 
 <style scoped>
-#card-statistics{
+#card-statistics {
   height: calc(100vh - 59px);
   overflow-y: auto;
 }
@@ -130,63 +186,11 @@ export default {
   flex-wrap: wrap;
   justify-content: flex-start;
   align-items: center;
-  margin-bottom: 20px;
-  padding: 10px;
+  margin-bottom: 25px;
+  padding: 10px 5px;
 }
-.search-input {
-  display: flex;
-  justify-content: flex-start;
-  padding: 10px 10px;
-  width: 15%;
-  border: 2px solid black;
-  border-radius: 3px;
-}
-.search-input input {
-  width: 100%;
-  margin: 8px 10px 8px 0px;
-  border: 0px;
-  box-sizing: border-box;
-  outline: 0;
-  color: #999999;
-  margin: 0px;
-}
-.search-input input::placeholder {
-  color: #999999;
-}
-/* 卡设置标题 */
-.card-title-box {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-.card-plus {
-  background: #1abc9c;
-  border-color: #1abc9c;
-}
-.card-plus:focus,
-.card-plus:hover {
-  background: #1fdcb6;
-  border-color: #1fdcb6;
-  color: #fff;
-}
-.card-plus:disabled {
-  background: #7cedd7;
-  border-color: #7cedd7;
-  color: #fff;
-}
-.card-info-title {
-  font-weight: 700;
-  font-family: "Arial Negreta", "Arial Normal", "Arial";
-  font-style: normal;
-  color: #1abc9c;
-  border-left: 4px solid #f5bc10;
-  padding-left: 15px;
-}
-.card-info-title span {
-  color: black;
-  font-size: 14px;
-  margin-left: 10px;
+/* main */
+.card-statistics-main .tabs {
+  margin: 30px 0px 10px;
 }
 </style>

@@ -11,49 +11,54 @@
         <div class="merchandise-info-main">
           <div class="merchandise-info-item">
             <div class="merchandise-info-left">商品分类:</div>
-            <div class="merchandise-info-right">114514</div>
+            <div class="merchandise-info-right">{{}}</div>
           </div>
           <div class="merchandise-info-item">
             <div class="merchandise-info-left">商品类型:</div>
-            <div class="merchandise-info-right">114514</div>
+            <div class="merchandise-info-right">{{}}</div>
           </div>
           <div class="merchandise-info-item">
             <div class="merchandise-info-left">商品名称:</div>
-            <div class="merchandise-info-right">114514</div>
+            <div class="merchandise-info-right">{{shopData.commName}}</div>
           </div>
           <div style="align-items: flex-start;" class="merchandise-info-item">
             <div class="merchandise-info-left">商品主图:</div>
             <div class="merchandise-info-right img-list">
-              <div @click="showPic()" class="merchandise-img-box">
-                <img :src="testImg" alt="img" />
+              <div
+                @click="showPic(item)"
+                v-for="(item,index) in imgList"
+                :key="index"
+                class="merchandise-img-box"
+              >
+                <img :src="item.image" alt="img" />
               </div>
             </div>
           </div>
           <div style="align-items: flex-start;" class="merchandise-info-item">
             <div class="merchandise-info-left">商品详情描述:</div>
             <div class="merchandise-info-right">
-              <div class="merchandise-info-textarea"></div>
+              <div class="merchandise-info-textarea">{{shopInfo.details}}</div>
             </div>
           </div>
           <div style="align-items: flex-start;" class="merchandise-info-item">
-            <div class="merchandise-info-left">商品规格价格:</div>
-            <div class="merchandise-info-right"></div>
+            <div class="merchandise-info-left">商品单价:</div>
+            <div class="merchandise-info-right">{{shopData.price}}</div>
           </div>
           <div class="merchandise-info-item">
             <div class="merchandise-info-left">发货城市:</div>
-            <div class="merchandise-info-right">114514</div>
+            <div class="merchandise-info-right">{{shopData.city}}</div>
           </div>
           <div class="merchandise-info-item">
             <div class="merchandise-info-left">销售量:</div>
-            <div class="merchandise-info-right">114514</div>
+            <div class="merchandise-info-right">{{shopData.num}}</div>
           </div>
           <div class="merchandise-info-item">
             <div class="merchandise-info-left">是否为特价商品:</div>
-            <div class="merchandise-info-right">114514</div>
+            <div class="merchandise-info-right">{{shopInfo.specialText}}</div>
           </div>
           <div class="merchandise-info-item">
             <div class="merchandise-info-left">限购次数:</div>
-            <div class="merchandise-info-right">114514</div>
+            <div class="merchandise-info-right">{{shopInfo.specialNum}}</div>
           </div>
         </div>
       </div>
@@ -67,19 +72,19 @@
         <div class="merchandise-info-main">
           <div class="merchandise-info-item">
             <div class="merchandise-info-left">商家编号:</div>
-            <div class="merchandise-info-right">114514</div>
+            <div class="merchandise-info-right">{{shopInfo.businessNo}}</div>
           </div>
           <div class="merchandise-info-item">
             <div class="merchandise-info-left">商家名称:</div>
-            <div class="merchandise-info-right">114514</div>
+            <div class="merchandise-info-right">{{shopData.businessName}}</div>
           </div>
           <div class="merchandise-info-item">
             <div class="merchandise-info-left">商家所在地:</div>
-            <div class="merchandise-info-right">114514</div>
+            <div class="merchandise-info-right">{{}}</div>
           </div>
           <div class="merchandise-info-item">
             <div class="merchandise-info-left">商家电话:</div>
-            <div class="merchandise-info-right">114514</div>
+            <div class="merchandise-info-right">{{}}</div>
           </div>
         </div>
       </div>
@@ -89,6 +94,10 @@
         <el-button type="info">拒绝申请</el-button>
       </div>
     </div>
+    <!-- 图片弹窗 -->
+    <el-dialog :visible.sync="dialogVisible">
+      <img width="100%" :src="dialogImageUrl" alt="img" />
+    </el-dialog>
   </div>
 </template>
 
@@ -97,14 +106,46 @@ export default {
   data() {
     return {
       showPage: true,
-      testImg:"./static/img/zhanwei.jpg",
+      shopData: {},
+      shopInfo: {},
+      imgList: [],
+      dialogVisible: false,
+      dialogImageUrl: ""
     };
   },
-  methods:{
+  created() {
+    this.shopData = JSON.parse(this.$route.query.data);
+    this.getShopInfo(this.shopData.commNo);
+  },
+  methods: {
     showPic(img) {
-      this.dialogImageUrl = img;
+      this.dialogImageUrl = img.image;
       this.dialogVisible = true;
     },
+    getShopInfo(No) {
+      let port = "mall/commManage/viewProductDetails";
+      let obj = {
+        commNo: No
+      };
+      let upData = this.$axios.upData(port, obj);
+      upData.then(res => {
+        if (res.data.status == 200) {
+          this.imgList = res.data.data.images;
+          let data = res.data.data.goods;
+          if(!!data.isSpecial){
+            data.specialText = "是";
+          }else{
+            data.specialText = "否";
+          }
+           this.shopInfo = data;
+        } else if (res.data.status == 588) {
+          this.$message.error(res.data.msg);
+          this.checkLogin();
+        } else {
+          this.$message.error(res.data.msg);
+        }
+      });
+    }
   }
 };
 </script>
@@ -165,14 +206,14 @@ export default {
   width: 85%;
   text-align: left;
 }
-.merchandise-info-footer{
+.merchandise-info-footer {
   width: 100%;
   padding-top: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.merchandise-info-textarea{
+.merchandise-info-textarea {
   max-height: 200px;
   width: 50%;
   word-break: break-all;

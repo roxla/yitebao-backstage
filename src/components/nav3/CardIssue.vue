@@ -124,7 +124,7 @@
               value-format="yyyy-MM-dd HH:mm:ss"
             ></el-date-picker>
             <div style="width: 10px;"></div>
-            <el-select class="search-select" v-model="userValue" placeholder="请选择发行员工">
+            <el-select filterable class="search-select" v-model="userValue" placeholder="请选择发行员工">
               <el-option label="全部员工" value></el-option>
               <el-option
                 v-for="item in userOptions"
@@ -147,33 +147,54 @@
             </el-button>
           </div>
           <div class="item-table-box">
-            <el-table height="calc(100vh - 283px)" border :data="tableData" style="width: 100%">
-              <el-table-column prop="date" align="center" show-overflow-tooltip label="发行时间"></el-table-column>
-              <el-table-column prop="name" align="center" show-overflow-tooltip label="发行员工"></el-table-column>
-              <el-table-column prop="address" align="center" show-overflow-tooltip label="发行单位名称"></el-table-column>
-              <el-table-column prop="date" align="center" show-overflow-tooltip label="卡号"></el-table-column>
-              <el-table-column prop="name" align="center" show-overflow-tooltip label="发行卡类型"></el-table-column>
-              <el-table-column prop="address" align="center" show-overflow-tooltip label="充值额"></el-table-column>
-              <el-table-column prop="address" align="center" show-overflow-tooltip label="赠送额"></el-table-column>
-              <el-table-column prop="address" align="center" show-overflow-tooltip label="是否使用"></el-table-column>
-              <el-table-column align="center" label="操作">
-                <template slot-scope="scope">
-                  <el-button
-                    type="success"
-                    @click="getRowData(scope.$index, scope.row)"
-                    size="mini"
-                  >导出数据</el-button>
-                </template>
-              </el-table-column>
+            <el-table height="calc(100vh - 290px)" border :data="tableData" style="width: 100%">
+              <el-table-column prop="createTime" align="center" show-overflow-tooltip label="发行时间"></el-table-column>
+              <el-table-column prop="workerName" align="center" show-overflow-tooltip label="发行员工"></el-table-column>
+              <el-table-column
+                prop="targetUnit"
+                align="center"
+                show-overflow-tooltip
+                label="发行单位名称"
+              ></el-table-column>
+              <el-table-column prop="fkCardNo" align="center" show-overflow-tooltip label="卡号"></el-table-column>
+              <el-table-column
+                prop="cardTypeName"
+                align="center"
+                show-overflow-tooltip
+                label="发行卡类型"
+              ></el-table-column>
+              <el-table-column
+                prop="rechargeMoney"
+                align="center"
+                show-overflow-tooltip
+                label="充值额"
+              ></el-table-column>
+              <el-table-column prop="presentMoney" align="center" show-overflow-tooltip label="赠送额"></el-table-column>
+              <el-table-column prop="claimText" align="center" show-overflow-tooltip label="是否使用"></el-table-column>
             </el-table>
-            <div style="padding: 5px 0px;">
-              <el-pagination
-                :current-page.sync="currentPage"
-                @current-change="getCardData"
-                :page-size="pageSize"
-                layout="total, prev, pager, next, jumper"
-                :total="total"
-              ></el-pagination>
+            <div class="table-bottom">
+              <div class="page-select">
+                <span>表格单页显示：</span>
+                <el-select style="width: 36%;" @change="getCardData" v-model="pageSize">
+                  <el-option :value="100"></el-option>
+                  <el-option :value="200"></el-option>
+                  <el-option :value="300"></el-option>
+                  <el-option :value="500"></el-option>
+                </el-select>
+                <span style="padding: 0px 5px;">条</span>
+              </div>
+              <div>
+                <el-pagination
+                  :current-page.sync="currentPage"
+                  @current-change="getCardData"
+                  :page-size="pageSize"
+                  layout="total, prev, pager, next, jumper"
+                  :total="total"
+                ></el-pagination>
+              </div>
+              <div>
+                <el-button @click="export2Excel" type="success" size="small">导出当前页数据</el-button>
+              </div>
             </div>
           </div>
         </tab>
@@ -202,7 +223,6 @@
 </template>
 
 <script>
-const pageSize = 15; //一页显示多少行
 import tabs from "@/common/tabs/tabs-framework.vue";
 import tab from "@/common/tabs/tab-framework.vue";
 import RimFramework from "@/common/rim-framework.vue";
@@ -221,7 +241,7 @@ export default {
       active: 0,
       total: 0, //总条数，根据接口获取数据长度
       currentPage: 1, //当前页数
-      pageSize: pageSize,
+      pageSize: 200, //一页显示多少行
       showPage: true,
       startNum: "",
       endNum: "",
@@ -239,6 +259,7 @@ export default {
   created() {
     this.getStaffData();
     this.getCardType();
+    this.getCardData();
   },
   methods: {
     getCardType() {
@@ -273,43 +294,122 @@ export default {
       upData.then(res => {
         if (res.data.status == 200) {
           let data = res.data.data.list;
-          console.log(data);
+          let arr = [];
+          for (let i = 0; i < data.length; i++) {
+            arr.push({ value: data[i].workerNo, label: data[i].bwName });
+          }
+          this.userOptions = arr;
         } else if (res.data.status == 588) {
           this.$message.error(res.data.msg);
           this.checkLogin();
         } else {
           this.$message.error(res.data.msg);
         }
-      })
+      });
       this.userOptions;
     },
-    getCardData() {},
-    export2Excel(index, data) {
-      if (200) {
-        require.ensure([], () => {
-          const { export_json_to_excel } = require("../../excel/Export2Excel");
-          const tHeader = [
-            "券编号",
-            "券名称",
-            "购买时间",
-            "兑换时间",
-            "金额",
-            "状态"
-          ]; // 上面设置Excel的表格第一行的标题
-          const filterVal = [
-            "cashCouponRecordNo",
-            "cashCouponName",
-            "purchasingDate",
-            "useDate",
-            "cashCouponMoney",
-            "isEmploy"
-          ]; // 上面的index、phone_Num、school_Name是tableData里对象的属性
-          const list = this.tableData; //把data里的tableData存到list
-          const data = this.formatJson(filterVal, list);
-          const fileName = "核销报表";
-          export_json_to_excel(tHeader, data, fileName);
-        });
+    getCardData() {
+      let port = "handlers/cardPublishRecord/getCardPublishRecordList";
+      let obj = {
+        fkWorkerNo: this.userValue,
+        targetUnit: this.shopValue
+      };
+      if (this.timeValue.length > 0) {
+        obj.createTime = this.timeValue[0];
+        obj.endDate = this.timeValue[1];
       }
+      if (JSON.stringify(this.isUse) != '""') {
+        obj.cardClaim = this.isUse;
+      }
+      let pages = {
+        pageNum: this.currentPage,
+        pageSize: this.pageSize
+      };
+      let upData = this.$axios.upData(port, obj, pages);
+      upData.then(res => {
+        if (res.data.status == 200) {
+          let data = res.data.data.list;
+          for (let i = 0; i < data.length; i++) {
+            switch (data[i].publishUnit) {
+              case 0:
+                data[i].unitText = "平台";
+                break;
+              case 1:
+                data[i].unitText = "用户";
+                break;
+            }
+            switch (data[i].cardState) {
+              case 0:
+                data[i].stateText = "正常";
+                break;
+              case 1:
+                data[i].stateText = "过期";
+                break;
+              case 2:
+                data[i].stateText = "冻结";
+                break;
+            }
+            if (data[i].cardClaim) {
+              data[i].claimText = "已使用";
+            } else {
+              data[i].claimText = "未使用";
+            }
+            if (data[i].isBoon) {
+              data[i].boonText = "团体卡";
+            } else {
+              data[i].boonText = "非团体卡";
+            }
+          }
+          this.total = res.data.data.total;
+          this.tableData = data;
+        } else if (res.data.status == 588) {
+          this.$message.error(res.data.msg);
+          this.checkLogin();
+        } else {
+          this.$message.error(res.data.msg);
+        }
+      });
+    },
+    // 导出数据到Excel表格
+    formatJson(filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => v[j]));
+    },
+    export2Excel() {
+      require.ensure([], () => {
+        const { export_json_to_excel } = require("../../excel/Export2Excel");
+        const tHeader = [
+          "记录编号",
+          "卡号",
+          "会员卡密码",
+          "卡类型名称",
+          "卡有效期",
+          "发行时间",
+          "批次号",
+          "卡折扣",
+          "员工姓名",
+          "发行单位",
+          "卡充值额",
+          "卡赠送额"
+        ]; // 上面设置Excel的表格第一行的标题
+        const filterVal = [
+          "publishRecordNo",
+          "fkCardNo",
+          "cardBindPwd",
+          "cardTypeName",
+          "endTime",
+          "createTime",
+          "batchNo",
+          "cardDiscount",
+          "workerName",
+          "targetUnit",
+          "rechargeMoney",
+          "presentMoney"
+        ]; // 上面的index、phone_Num、school_Name是tableData里对象的属性
+        const list = this.tableData; //把data里的tableData存到list
+        const data = this.formatJson(filterVal, list);
+        const fileName = "发卡报表第" + this.currentPage + "页";
+        export_json_to_excel(tHeader, data, fileName);
+      });
     }
   }
 };
@@ -363,6 +463,20 @@ export default {
 }
 .item-table-box {
   padding: 10px 20px 0px;
+}
+/* 表格 */
+.table-bottom {
+  padding: 5px 0px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+}
+.page-select{
+  width: 210px;
+}
+.table-bottom span {
+  font-size: 14px;
 }
 /* 按钮 */
 .card-plus {

@@ -187,8 +187,12 @@ export default {
   methods: {
     // 时间初始化
     timeSet() {
-      const date = new Date();
-      this.timeValue = [this.todayStart, this.todayEnd];
+      // 今日用户统计
+      this.timeValue = [
+        this.formatDate(this.todayStart),
+        this.formatDate(this.todayEnd)
+      ];
+      // 初始化年月
       this.yearValue = this.tYear;
       this.monValue = this.tMon;
       let x = this.$date(this.tMon + "-" + "01", this.tMon + "-" + this.tDay);

@@ -186,9 +186,6 @@ export default {
               page: "/main/userstatistics"
             },
             {
-              name: "办卡统计"
-            },
-            {
               name: "卡综合统计",
               page: "/main/cardcomprehensivestatistics"
             },

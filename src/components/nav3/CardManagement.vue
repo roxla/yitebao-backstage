@@ -267,6 +267,7 @@ export default {
               data[i].isBoonText = "非团洗卡";
             }
           }
+          console.log(res);
           this.cardList = data;
         } else if (res.data.status == 588) {
           this.$message.error(res.data.msg);

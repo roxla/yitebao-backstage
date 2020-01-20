@@ -144,7 +144,7 @@ export default {
       tableData: [],
       total: 0, //总条数，根据接口获取数据长度
       currentPage: 1, //当前页数
-      pageSize: pageSize
+      pageSize
     };
   },
   computed: {

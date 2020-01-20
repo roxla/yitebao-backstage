@@ -23,8 +23,8 @@ export default {
     }
   },
   grid: {
-    left: "3%", //组件离容器左侧
-    right: "4%",
+    left: "2%", //组件离容器左侧
+    right: "2%",
     bottom: "3%",
     containLabel: true
   },

@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import HelloWorld from '@/components/HelloWorld'
 import Login from '@/components/Login'
 import Main from '@/components/Main'
+import Talk from '@/components/Talk'
 // nav1
 import Index from '@/components/nav1/Index'
 // nav2
@@ -56,9 +57,20 @@ export default new Router({
       component: Login,
     },
     {
+      path: '/talk',
+      name: 'talk',
+      component: Talk,
+      meta: {
+        requrireAuth: true
+      }
+    },
+    {
       path: '/main',
       name: 'main',
       component: Main,
+      meta: {
+        requrireAuth: true // requireAuth自定义
+      },
       children: [
         // nav1
         {

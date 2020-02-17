@@ -56,6 +56,12 @@ export default {
   border-color: #f88b8b;
   color: #fff;
 }
+.dialog-danger:active {
+  background: #f56c6c;
+  border-color: #f56c6c;
+  color: #fff;
+}
+/*  */
 .dialog-success {
   background: #02bda6;
   border-color: #02bda6;
@@ -67,6 +73,12 @@ export default {
   border-color: #02bda6;
   color: #fff;
 }
+.dialog-success:active {
+  background: #02bda6;
+  border-color: #02bda6;
+  color: #fff;
+}
+/*  */
 .dialog-close {
   background: #c9c9c9;
   border-color: #c9c9c9;
@@ -74,6 +86,11 @@ export default {
 }
 .dialog-close:focus,
 .dialog-close:hover {
+  background: #c9c9c9;
+  border-color: #c9c9c9;
+  color: #fff;
+}
+.dialog-close:active {
   background: #c9c9c9;
   border-color: #c9c9c9;
   color: #fff;
@@ -111,28 +128,28 @@ export default {
   border-color: #1abc9c !important;
 }
 /* cardSet */
-.avatar-uploader .el-upload{
+.avatar-uploader .el-upload {
   width: 100%;
   height: 100%;
 }
 /* userDetails & cardDetails */
-.card-details-tabs .el-tabs__content{
+.card-details-tabs .el-tabs__content {
   padding-bottom: 0px;
 }
-.user-details-tabs .el-tabs__content{
+.user-details-tabs .el-tabs__content {
   padding: 0px 10px;
 }
 /* setImgList */
-.search-set-input input{
+.search-set-input input {
   border: 2px solid black;
 }
-.search-set-input input:hover{
+.search-set-input input:hover {
   border-color: black;
 }
-.search-set-input input:focus{
+.search-set-input input:focus {
   border-color: #1abc9c;
 }
-.search-set-input input{
+.search-set-input input {
   color: #999999;
 }
 </style>

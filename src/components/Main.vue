@@ -10,22 +10,32 @@
       diaLog:获取用户菜单选项 接收
     -->
     <MenuFramework @getData="getTitle" @diaLog="diaLog" :userName="userName" :menuItem="menuList" />
+    <!-- 页首/导航标签栏 -->
     <div style="width: 100%">
-      <div class="title">
-        <svg-icon id="title-icon" icon-class="u297"></svg-icon>
-        <div class="title-text">
-          <el-breadcrumb v-show="!isBack" separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item
-              v-for="(item,index) in currentPath"
-              :key="index"
-              :to="{ path: item.path }"
-            >{{item.meta.title}}</el-breadcrumb-item>
-          </el-breadcrumb>
-          <div v-show="isBack">
-            <span @click="$router.back(-1)" class="back-page-button">返回上一页</span>
-            <i class="back-page-icon el-icon-arrow-right"></i>
-            <span class="back-page">{{backTitle}}</span>
+      <div class="title-box">
+        <div class="title">
+          <svg-icon id="title-icon" icon-class="u297"></svg-icon>
+          <div class="title-text">
+            <el-breadcrumb v-show="!isBack" separator-class="el-icon-arrow-right">
+              <el-breadcrumb-item
+                v-for="(item,index) in currentPath"
+                :key="index"
+                :to="{ path: item.path }"
+              >{{item.meta.title}}</el-breadcrumb-item>
+            </el-breadcrumb>
+            <div v-show="isBack">
+              <span @click="$router.back(-1)" class="back-page-button">返回上一页</span>
+              <i class="back-page-icon el-icon-arrow-right"></i>
+              <span class="back-page">{{backTitle}}</span>
+            </div>
           </div>
+        </div>
+        <div class="talk-button">
+          <router-link to="/talk" target="_blank" tag="a">
+            <el-badge :value="talk" :max="99" class="talk-item">
+              <svg-icon id="talk-icon" icon-class="u205"></svg-icon>
+            </el-badge>
+          </router-link>
         </div>
       </div>
       <router-view style="padding-top: 5px;" />
@@ -84,6 +94,7 @@
 import MenuFramework from "@/common/menu-framework.vue";
 import DialogFramework from "@/common/dialog-framework.vue";
 import RimFramework from "@/common/rim-framework.vue";
+import { mapState } from "vuex";
 export default {
   components: {
     MenuFramework,
@@ -103,17 +114,22 @@ export default {
         } else {
           this.isBack = false;
         }
+        this.getTalk();
       },
       immediate: true
     }
+  },
+  computed: {
+    // 用户信息
+    ...mapState("userInfo", ["userName"]),
+    ...mapState("userInfo", ["userInfo"])
   },
   data() {
     return {
       isBack: false,
       backTitle: "",
-      // 用户名
-      userInfo: {},
-      userName: "",
+      // 聊天数据
+      talk: "",
       // 路由列表
       currentPath: [],
       // 用户菜单弹窗
@@ -263,15 +279,19 @@ export default {
     this.getUserName();
   },
   methods: {
+    getTalk() {
+      // this.talk = ""
+    },
     getUserName() {
       let port = "handlers/worker/getLoginData";
-      if (!this.userName) {
+      if (!sessionStorage.getItem('userName')) {
         let upData = this.$axios.upData(port);
         upData.then(res => {
           if (res.data.status == 200) {
-            // console.log(res);
-            this.userInfo = res.data.data;
-            this.userName = res.data.data.bwName;
+            let data = res.data.data;
+            this.$store.commit("userInfo/getUserInfo", data);
+            this.$store.commit("userInfo/getUserName", data.bwName);
+            sessionStorage.setItem("userName", data.bwName);
           } else if (res.data.status == 588) {
             this.$message.error(res.data.msg);
             this.checkLogin();
@@ -334,7 +354,7 @@ export default {
       } else {
         this.$message.warning("有必填项未填写，请检查");
       }
-    },
+    }
   }
 };
 </script>
@@ -344,12 +364,17 @@ export default {
   display: flex;
 }
 /* 头部 */
-.title {
+.title-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   width: 100%;
   background-color: #f2f2f2;
   height: 54px;
   box-sizing: border-box;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.15);
+}
+.title {
   display: flex;
   align-items: center;
   padding-left: 20px;
@@ -365,14 +390,14 @@ export default {
   border-left: 3px solid #00e6e6;
   padding-left: 10px;
 }
-.back-page-button{
+.back-page-button {
   font-size: 15px;
   font-weight: 700;
   color: #606266;
   cursor: pointer;
 }
-.back-page-button:hover{
-  color: #409EFF;
+.back-page-button:hover {
+  color: #409eff;
 }
 .back-page {
   font-weight: 400;
@@ -383,5 +408,18 @@ export default {
   color: #c0c4cc;
   margin: 0 6px;
   font-weight: 400;
+}
+/* 聊天样式 */
+.talk-button {
+  margin-right: 10px;
+  cursor: pointer;
+}
+.talk-item {
+  margin-top: 10px;
+  margin-right: 40px;
+}
+#talk-icon {
+  width: 29px;
+  height: 29px;
 }
 </style>

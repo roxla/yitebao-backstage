@@ -233,6 +233,14 @@
           <editor-bar v-model="useText" :isClear="isClear"></editor-bar>
         </div>
       </div>
+      <!-- <div style="align-items: flex-start;" class="coupon-item-box">
+        <div class="coupon-item-title">
+          <span>*</span>是否立即上架：
+        </div>
+        <div>
+          <el-switch v-model="isUse" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+        </div>
+      </div> -->
     </div>
     <div class="coupon-footer">
       <el-button @click="postCoupon" type="success">
@@ -291,8 +299,6 @@ export default {
   mounted() {
     if (!!this.$route.query.item) {
       let data = JSON.parse(this.$route.query.item);
-      console.log(this.laundry);
-      console.log(this.shop);
       this.couponName = data.couponName;
       this.couponCash = data.money;
       this.couponNum = data.num;

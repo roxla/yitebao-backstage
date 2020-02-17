@@ -12,6 +12,7 @@
             @blur="reChange"
             placeholder="请输入姓名"
             type="text"
+            maxlength="5"
           />
         </div>
       </div>

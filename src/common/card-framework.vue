@@ -221,6 +221,8 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 /* 优惠券 */
 .card-item-name {

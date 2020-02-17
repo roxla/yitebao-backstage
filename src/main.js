@@ -9,6 +9,8 @@ import * as axios from '@/assets/axiosServer.js'
 import $axios from 'axios';
 import getAllDate from '@/assets/timeSet/getAllDate.js'
 import isLeapYear from '@/assets/isLeapYear.js'
+import talkTime from '@/assets/timeSet/setTalkTime.js' //聊天时间 
+import store from './store' //引入store
 import './icons'
 // 高德地图
 import AMap from 'vue-amap'
@@ -65,23 +67,7 @@ Vue.prototype.checkLogin = function () { // 检查登录状态
   });
 };
 Vue.use(ElementUI);
-
-/* eslint-disable no-new */
-new Vue({
-  el: '#app',
-  router,
-  components: {
-    App
-  },
-  template: '<App/>'
-})
-
-// 请求拦截器
-// $axios.interceptors.request.use(res => {
-//   res.headers.common['token'] = sessionStorage.getItem('token') || ''
-//   return res;
-// });
-
+// 过滤器
 // 全日期过滤
 Vue.filter('fulldate', function (value) {
   let MD = value.split("-")[0] + "-" + value.split("-")[1] + "-" + value.split("-")[2].split(" ")[0];
@@ -105,3 +91,25 @@ Vue.filter('time', function (value) {
   let HM = value.split("-")[2].split(" ")[1].split(":")[0] + ":" + value.split("-")[2].split(" ")[1].split(":")[1];
   return HM;
 })
+
+// 聊天时间过滤
+Vue.filter('talktime', function (value) {
+  return talkTime(value);
+})
+
+/* eslint-disable no-new */
+new Vue({
+  el: '#app',
+  router,
+  store, //注册store
+  components: {
+    App
+  },
+  template: '<App/>'
+})
+
+// 请求拦截器
+// $axios.interceptors.request.use(res => {
+//   res.headers.common['token'] = sessionStorage.getItem('token') || ''
+//   return res;
+// });

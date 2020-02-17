@@ -74,6 +74,7 @@ export default {
   methods: {
     login() {
       if (!!this.login_tel && !!this.login_pw) {
+        sessionStorage.clear();
         let port = "handlers/worker/workerLogin";
         let obj = {
           phone: this.login_tel,

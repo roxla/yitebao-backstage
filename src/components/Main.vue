@@ -291,6 +291,7 @@ export default {
             let data = res.data.data;
             this.$store.commit("userInfo/getUserInfo", data);
             this.$store.commit("userInfo/getUserName", data.bwName);
+            sessionStorage.setItem("userUid", data.kid);
             sessionStorage.setItem("userName", data.bwName);
           } else if (res.data.status == 588) {
             this.$message.error(res.data.msg);

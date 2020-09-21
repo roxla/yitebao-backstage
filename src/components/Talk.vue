@@ -68,11 +68,9 @@
                     <!-- 左-消息 -->
                     <div class="my-left">
                       <!-- 文字消息 -->
-                      <div v-if="row.msg.type=='text'" class="bubble">
-                        
-                      </div>
+                      <div v-if="row.msg.type=='text'" class="my-bubble">123123</div>
                       <!-- 图片消息 -->
-                      <div v-if="row.msg.type=='img'" class="bubble img">
+                      <div v-if="row.msg.type=='img'" class="my-bubble bubble-img">
                         <img
                           :src="row.msg.content.url"
                           :style="{'width': row.msg.content.w+'px','height': row.msg.content.h+'px'}"
@@ -91,13 +89,23 @@
                       <el-avatar :src="row.msg.userinfo.face" :size="45"></el-avatar>
                     </div>
                     <!-- 右-消息 -->
-                    <div class="other-right"></div>
+                    <div class="other-right">
+                      <div v-if="row.msg.type=='text'" class="other-bubble">啊啊啊啊啊啊</div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
             <div class="talk-input-box">
+              <transition name="slide-top">
+                <div v-show="!hideFont" class="change-font-box">
+                  <div class="change-font-border">1</div>
+                </div>
+              </transition>
               <div class="talk-tool-box">
+                <div class="talk-tool-item">
+                  <svg-icon @click="hideFont = !hideFont" id="tool-font" icon-class="font"></svg-icon>
+                </div>
                 <div class="talk-tool-item">
                   <svg-icon id="tool-emj" icon-class="Big-Smile"></svg-icon>
                   <!-- 表情 -->
@@ -157,6 +165,7 @@ export default {
       // 输入
       msgList: [],
       //表情定义
+      hideFont: true,
       hideEmoji: true,
       emojiList: [
         [
@@ -183,7 +192,7 @@ export default {
           { url: "120.gif", alt: "[笑]" },
           { url: "121.gif", alt: "[快乐]" },
           { url: "122.gif", alt: "[奇]" },
-          { url: "123.gif", alt: "[傲]" }
+          { url: "123.gif", alt: "[傲]" },
         ],
         [
           { url: "124.gif", alt: "[饿]" },
@@ -209,7 +218,7 @@ export default {
           { url: "144.gif", alt: "[恶搞]" },
           { url: "145.gif", alt: "[什么]" },
           { url: "146.gif", alt: "[什么]" },
-          { url: "147.gif", alt: "[累]" }
+          { url: "147.gif", alt: "[累]" },
         ],
         [
           { url: "148.gif", alt: "[看]" },
@@ -235,7 +244,7 @@ export default {
           { url: "168.gif", alt: "[生日]" },
           { url: "169.gif", alt: "[电]" },
           { url: "170.gif", alt: "[炸弹]" },
-          { url: "171.gif", alt: "[刀子]" }
+          { url: "171.gif", alt: "[刀子]" },
         ],
         [
           { url: "172.gif", alt: "[足球]" },
@@ -261,7 +270,7 @@ export default {
           { url: "192.gif", alt: "[蹦哒]" },
           { url: "193.gif", alt: "[颤抖]" },
           { url: "194.gif", alt: "[怄气]" },
-          { url: "195.gif", alt: "[跳舞]" }
+          { url: "195.gif", alt: "[跳舞]" },
         ],
         [
           { url: "196.gif", alt: "[发呆]" },
@@ -287,22 +296,22 @@ export default {
           { url: "216.png", alt: "[金钱]" },
           { url: "217.png", alt: "[蛋糕]" },
           { url: "218.png", alt: "[彩带]" },
-          { url: "219.png", alt: "[礼物]" }
-        ]
+          { url: "219.png", alt: "[礼物]" },
+        ],
       ],
       textMsg: "",
       // 信息
       info1: false,
-      info2: false
+      info2: false,
     };
   },
   directives: {
     focus: {
       // 指令的定义
-      inserted: function(el) {
+      inserted: function (el) {
         el.focus();
-      }
-    }
+      },
+    },
   },
   created() {
     this.height = window.innerHeight;
@@ -320,7 +329,7 @@ export default {
       cb(results);
     },
     createFilter(queryString) {
-      return restaurant => {
+      return (restaurant) => {
         return (
           restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) ===
           0
@@ -346,7 +355,7 @@ export default {
     },
     // 通信
     getUserList() {
-      this.axios.get("./static/Json/talk.json").then(res => {
+      this.axios.get("./static/Json/talk.json").then((res) => {
         let data = res.data;
         let arr = [];
         for (let i = 0; i < data.length; i++) {
@@ -355,7 +364,7 @@ export default {
             time: data[i].time,
             img: data[i].img,
             talk: data[i].talk,
-            name: data[i].name
+            name: data[i].name,
           });
         }
         this.userList = arr;
@@ -375,10 +384,10 @@ export default {
             userinfo: {
               uid: 1,
               username: "测试",
-              face: "/static/img/talk/face/face_11.jpg"
+              face: "/static/img/talk/face/face_11.jpg",
             },
-            content: { text: "为什么温度会相差那么大？" }
-          }
+            content: { text: "为什么温度会相差那么大？" },
+          },
         },
         {
           type: "user",
@@ -389,14 +398,14 @@ export default {
             userinfo: {
               uid: -1,
               username: "哈哈123",
-              face: "/static/img/talk/face/face_2.jpg"
+              face: "/static/img/talk/face/face_2.jpg",
             },
             content: {
               text:
-                "这个是有偏差的，两个温度相差十几二十度是很正常的，如果相差五十度，那即是质量问题了。"
-            }
-          }
-        }
+                "这个是有偏差的，两个温度相差十几二十度是很正常的，如果相差五十度，那即是质量问题了。",
+            },
+          },
+        },
       ];
       // 获取消息中的图片,并处理显示尺寸
       // for (let i = 0; i < list.length; i++) {
@@ -424,10 +433,10 @@ export default {
             userinfo: {
               uid: -1,
               username: "哈哈123",
-              face: "/static/img/face.jpg"
+              face: "/static/img/face.jpg",
             },
-            content: { text: "为什么温度会相差那么大？" }
-          }
+            content: { text: "为什么温度会相差那么大？" },
+          },
         },
         {
           type: "user",
@@ -438,13 +447,13 @@ export default {
             userinfo: {
               uid: 1,
               username: "测试",
-              face: "/static/img/im/face/face_2.jpg"
+              face: "/static/img/im/face/face_2.jpg",
             },
             content: {
               text:
-                "这个是有偏差的，两个温度相差十几二十度是很正常的，如果相差五十度，那即是质量问题了。"
-            }
-          }
+                "这个是有偏差的，两个温度相差十几二十度是很正常的，如果相差五十度，那即是质量问题了。",
+            },
+          },
         },
         {
           type: "user",
@@ -455,10 +464,10 @@ export default {
             userinfo: {
               uid: 1,
               username: "测试",
-              face: "/static/img/im/face/face_2.jpg"
+              face: "/static/img/im/face/face_2.jpg",
             },
-            content: { url: "/static/voice/1.mp3", length: "00:06" }
-          }
+            content: { url: "/static/voice/1.mp3", length: "00:06" },
+          },
         },
         {
           type: "user",
@@ -469,11 +478,11 @@ export default {
             userinfo: {
               uid: -1,
               username: "哈哈123",
-              face: "/static/img/face.jpg"
+              face: "/static/img/face.jpg",
             },
-            content: { url: "/static/voice/2.mp3", length: "00:06" }
-          }
-        }
+            content: { url: "/static/voice/2.mp3", length: "00:06" },
+          },
+        },
       ];
     },
     //处理图片尺寸
@@ -541,8 +550,8 @@ export default {
     },
     addRedEnvelopeMsg(msg) {
       this.msgList.push(msg);
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -711,6 +720,60 @@ export default {
   display: flex;
   justify-content: flex-start;
 }
+.my-left {
+  display: flex;
+  align-items: flex-start;
+  text-align: left;
+  width: 100% - 60px;
+  margin-right: 5px;
+}
+.other-right {
+  display: flex;
+  align-items: flex-start;
+  text-align: left;
+  width: 100% - 60px;
+  margin-left: 5px;
+}
+.my-bubble,
+.other-bubble {
+  max-width: 100%;
+  min-height: 45px;
+  display: flex;
+  align-items: center;
+  word-break: break-word;
+  border-radius: 5px;
+  /* TODO */
+  padding: 0px 8px;
+  font-family: "楷体_GB2312";
+}
+.my-bubble {
+  background-color: #2683f5;
+  color: white;
+}
+.other-bubble {
+  background-color: #eeeeee;
+}
+.my-left::after {
+  content: "";
+  width: 0;
+  height: 0;
+  border-top: 8px solid transparent;
+  border-left: 10px solid #2683f5;
+  border-bottom: 8px solid transparent;
+  margin-top: 14px;
+}
+.other-right::before {
+  content: "";
+  width: 0;
+  height: 0;
+  border-top: 8px solid transparent;
+  border-right: 10px solid #eeeeee;
+  border-bottom: 8px solid transparent;
+  margin-top: 14px;
+}
+.bubble-img {
+  padding: 5px 0px;
+}
 /* 用户资料 */
 .user-info-box {
   width: 100%;
@@ -740,25 +803,61 @@ export default {
 .slide-right-leave-to {
   transform: translateX(280px);
 }
+.slide-top-enter-active {
+  transition: all 0.3s linear;
+}
+.slide-top-leave-active {
+  transition: all 0.3s linear;
+}
+.slide-top-enter,
+.slide-top-leave-to {
+  transform: translatey(40px);
+}
 /* 聊天输入 */
 .talk-input-box {
   border-top: 1px solid #c5c5c6;
   height: 200px;
-  padding: 0px 40px;
+  padding: 0px 10px;
+}
+.change-font-box {
+  position: absolute;
+  height: 40px;
+  width: calc(100% - 312px);
+  right: 0px;
+  bottom: 200px;
+  z-index: 10000;
+  border-top: 1px solid #c5c5c6;
+}
+.change-font-border{
+  width: calc(100% - 20px);
+  height: 100%;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0px 10px;
 }
 .talk-tool-box {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  margin: 10px 0px 5px;
+  margin: 10px 0px 5px 10px;
 }
 .talk-tool-item {
-  margin-right: 20px;
+  margin-right: 15px;
+  padding: 3px;
+}
+.talk-tool-item:hover {
+  background-color: #eeeeee;
+}
+#tool-font {
+  width: 18px;
+  height: 18px;
 }
 #tool-emj,
 #tool-photo {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
 }
 .talk-input-box textarea {
   width: 100%;
